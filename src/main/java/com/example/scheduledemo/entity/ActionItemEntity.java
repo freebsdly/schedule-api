@@ -1,11 +1,15 @@
 package com.example.scheduledemo.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "action_items")
 @Getter
@@ -23,4 +27,8 @@ public class ActionItemEntity {
     String status;
 
     LocalDateTime dueDate;
+
+    @ManyToOne
+    @JoinColumn(name = "meeting_minute_id")
+    MeetingMinutesEntity meetingMinute;
 }

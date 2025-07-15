@@ -14,4 +14,11 @@ public interface EntityMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     ActionItemEntity partialUpdate(ActionItemDto actionItemDto, @MappingTarget ActionItemEntity actionItemEntity);
+
+    MeetingMinutesEntity toEntity(MeetingMinutesDto meetingMinutesDto);
+
+    MeetingMinutesDto toDto(MeetingMinutesEntity meetingMinutesEntity);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    MeetingMinutesEntity partialUpdate(MeetingMinutesDto meetingMinutesDto, @MappingTarget MeetingMinutesEntity meetingMinutesEntity);
 }
