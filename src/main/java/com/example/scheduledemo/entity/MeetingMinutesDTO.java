@@ -1,14 +1,14 @@
 package com.example.scheduledemo.entity;
 
-import lombok.Value;
+import lombok.Data;
 
 import java.io.Serializable;
 
 /**
  * DTO for {@link MeetingMinutesEntity}
  */
-@Value
-public class MeetingMinutesDto implements Serializable {
+@Data
+public class MeetingMinutesDTO implements Serializable {
     Long id;
     String rawData;
 

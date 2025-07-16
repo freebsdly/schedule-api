@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
  * DTO for {@link ActionItemEntity}
  */
 @Data
-public class ActionItemDto implements Serializable {
+public class ActionItemDTO implements Serializable {
     Long id;
     String name;
     String description;

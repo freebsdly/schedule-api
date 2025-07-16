@@ -8,17 +8,17 @@ public interface EntityMapper {
 
     EntityMapper INSTANCE = Mappers.getMapper(EntityMapper.class);
 
-    ActionItemEntity toEntity(ActionItemDto actionItemDto);
+    ActionItemEntity toEntity(ActionItemDTO actionItemDto);
 
-    ActionItemDto toDto(ActionItemEntity actionItemEntity);
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    ActionItemEntity partialUpdate(ActionItemDto actionItemDto, @MappingTarget ActionItemEntity actionItemEntity);
-
-    MeetingMinutesEntity toEntity(MeetingMinutesDto meetingMinutesDto);
-
-    MeetingMinutesDto toDto(MeetingMinutesEntity meetingMinutesEntity);
+    ActionItemDTO toDto(ActionItemEntity actionItemEntity);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    MeetingMinutesEntity partialUpdate(MeetingMinutesDto meetingMinutesDto, @MappingTarget MeetingMinutesEntity meetingMinutesEntity);
+    ActionItemEntity partialUpdate(ActionItemDTO actionItemDto, @MappingTarget ActionItemEntity actionItemEntity);
+
+    MeetingMinutesEntity toEntity(MeetingMinutesDTO meetingMinutesDto);
+
+    MeetingMinutesDTO toDto(MeetingMinutesEntity meetingMinutesEntity);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    MeetingMinutesEntity partialUpdate(MeetingMinutesDTO meetingMinutesDto, @MappingTarget MeetingMinutesEntity meetingMinutesEntity);
 }

@@ -1,6 +1,6 @@
 package com.example.scheduledemo.api.vo;
 
-import com.example.scheduledemo.entity.MeetingMinutesDto;
+import com.example.scheduledemo.entity.MeetingMinutesDTO;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -9,10 +9,9 @@ public interface VOMapper {
 
     VOMapper INSTANCE = Mappers.getMapper(VOMapper.class);
 
-    MeetingMinutesDto toEntity(MeetingMinutesVO meetingMinutesVO);
+    MeetingMinutesDTO toDTO(MeetingMinutesAddVO vo);
 
-    MeetingMinutesVO toDto(MeetingMinutesDto meetingMinutesDto);
+    MeetingMinutesDTO toDTO(MeetingMinutesUpdateVO vo);
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    MeetingMinutesDto partialUpdate(MeetingMinutesVO meetingMinutesVO, @MappingTarget MeetingMinutesDto meetingMinutesDto);
+    MeetingMinutesVO toVO(MeetingMinutesDTO meetingMinutesDto);
 }

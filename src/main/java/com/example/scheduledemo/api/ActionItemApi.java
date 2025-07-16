@@ -1,6 +1,6 @@
 package com.example.scheduledemo.api;
 
-import com.example.scheduledemo.entity.ActionItemDto;
+import com.example.scheduledemo.entity.ActionItemDTO;
 import com.example.scheduledemo.service.ActionItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +17,7 @@ public class ActionItemApi {
     ActionItemService actionItemService;
 
     @GetMapping()
-    List<ActionItemDto> queryAllActionItems() {
+    List<ActionItemDTO> queryAllActionItems() {
         return actionItemService.getActionItems();
     }
 }

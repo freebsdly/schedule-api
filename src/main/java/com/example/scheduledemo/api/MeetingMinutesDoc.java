@@ -1,8 +1,9 @@
 package com.example.scheduledemo.api;
 
-import com.example.scheduledemo.entity.MeetingMinutesDto;
+import com.example.scheduledemo.api.vo.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springdoc.core.annotations.ParameterObject;
 
 import java.util.List;
 
@@ -10,17 +11,22 @@ import java.util.List;
 public interface MeetingMinutesDoc {
 
     @Operation(summary = "Get meeting minutes by id")
-    MeetingMinutesDto getMeetingMinutesById(Long id);
+    APIResultVO<MeetingMinutesVO> getMeetingMinutesById(Long id);
 
     @Operation(summary = "Get all meeting minutes")
-    List<MeetingMinutesDto> getMeetingMinutes();
+    APIResultVO<List<MeetingMinutesVO>> getMeetingMinutes();
 
     @Operation(summary = "Create a new meeting minutes")
-    MeetingMinutesDto createMeetingMinutes(MeetingMinutesDto meetingMinutesDto);
+    APIResultVO<MeetingMinutesVO> createMeetingMinutes(MeetingMinutesAddVO vo);
 
     @Operation(summary = "Update a meeting minutes")
-    MeetingMinutesDto updateMeetingMinutes(MeetingMinutesDto meetingMinutesDto);
+    APIResultVO<MeetingMinutesVO> updateMeetingMinutes(MeetingMinutesUpdateVO vo);
 
     @Operation(summary = "Delete a meeting minutes")
-    void deleteMeetingMinutes(Long id);
+    APIResultVO<Long> deleteMeetingMinutes(Long id);
+
+    @Operation(summary = "Generate meeting minutes using AI")
+    APIResultVO<String> generateMeetingMinutes(@ParameterObject GenerateMeetingMinutesVO vo) throws Exception;
+
+
 }

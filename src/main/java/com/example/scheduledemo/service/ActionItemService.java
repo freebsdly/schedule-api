@@ -1,9 +1,8 @@
 package com.example.scheduledemo.service;
 
-import com.example.scheduledemo.entity.ActionItemDto;
+import com.example.scheduledemo.entity.ActionItemDTO;
 import com.example.scheduledemo.entity.ActionItemEntity;
 import com.example.scheduledemo.entity.EntityMapper;
-import com.example.scheduledemo.entity.QActionItemEntity;
 import com.example.scheduledemo.repository.ActionItemRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.annotation.Tool;
@@ -22,12 +21,12 @@ public class ActionItemService {
     ActionItemRepository actionItemRepository;
 
 
-    public List<ActionItemDto> getActionItems() {
+    public List<ActionItemDTO> getActionItems() {
         List<ActionItemEntity> items = actionItemRepository.findAll();
         return items.stream().map(EntityMapper.INSTANCE::toDto).collect(Collectors.toList());
     }
 
-    public ActionItemDto getActionItemById(Long id) {
+    public ActionItemDTO getActionItemById(Long id) {
         ActionItemEntity actionItemNotFound = actionItemRepository.findById(id).orElseThrow(
                 () -> new RuntimeException("Action item not found")
         );

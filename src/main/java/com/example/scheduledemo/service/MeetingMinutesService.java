@@ -1,7 +1,7 @@
 package com.example.scheduledemo.service;
 
 import com.example.scheduledemo.entity.EntityMapper;
-import com.example.scheduledemo.entity.MeetingMinutesDto;
+import com.example.scheduledemo.entity.MeetingMinutesDTO;
 import com.example.scheduledemo.entity.MeetingMinutesEntity;
 import com.example.scheduledemo.repository.MeetingMinutesRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -17,23 +17,29 @@ public class MeetingMinutesService {
     @Autowired
     private MeetingMinutesRepository meetingMinutesRepository;
 
-    public MeetingMinutesDto getMeetingMinutesById(Long id) {
+    @Autowired
+    private DingTalkService dingTalkService;
+
+    @Autowired
+    private AIService aiService;
+
+    public MeetingMinutesDTO getMeetingMinutesById(Long id) {
         MeetingMinutesEntity meetingMinutesEntity = meetingMinutesRepository.findById(id).orElse(null);
         return EntityMapper.INSTANCE.toDto(meetingMinutesEntity);
     }
 
-    public List<MeetingMinutesDto> getMeetingMinutes() {
+    public List<MeetingMinutesDTO> getMeetingMinutes() {
         List<MeetingMinutesEntity> meetingMinutesEntities = meetingMinutesRepository.findAll();
         return meetingMinutesEntities.stream().map(EntityMapper.INSTANCE::toDto).toList();
     }
 
-    public MeetingMinutesDto createMeetingMinutes(MeetingMinutesDto meetingMinutesDto) {
+    public MeetingMinutesDTO createMeetingMinutes(MeetingMinutesDTO meetingMinutesDto) {
         MeetingMinutesEntity entity = EntityMapper.INSTANCE.toEntity(meetingMinutesDto);
         MeetingMinutesEntity save = meetingMinutesRepository.save(entity);
         return EntityMapper.INSTANCE.toDto(save);
     }
 
-    public MeetingMinutesDto updateMeetingMinutes(MeetingMinutesDto meetingMinutesDto) {
+    public MeetingMinutesDTO updateMeetingMinutes(MeetingMinutesDTO meetingMinutesDto) {
         MeetingMinutesEntity entity = EntityMapper.INSTANCE.toEntity(meetingMinutesDto);
         MeetingMinutesEntity save = meetingMinutesRepository.save(entity);
         return EntityMapper.INSTANCE.toDto(save);
@@ -41,5 +47,10 @@ public class MeetingMinutesService {
 
     public void deleteMeetingMinutes(Long id) {
         meetingMinutesRepository.deleteById(id);
+    }
+
+    public String generateMeetingMinutes(String unionId, String calendarId, String eventId) throws Exception {
+        String text = dingTalkService.GetEventCloudRecordAllText(unionId, calendarId, eventId);
+        return aiService.getMeetingMinutes(text);
     }
 }
