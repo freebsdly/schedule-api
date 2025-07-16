@@ -1,5 +1,8 @@
 package com.example.scheduledemo;
 
+import com.example.scheduledemo.service.MeetingMinutesService;
+import org.springframework.ai.tool.ToolCallbackProvider;
+import org.springframework.ai.tool.method.MethodToolCallbackProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -30,6 +33,11 @@ public class Config {
         config.setProtocol("https");
         config.setRegionId("central");
         return new com.aliyun.dingtalkoauth2_1_0.Client(config);
+    }
+
+    @Bean
+    public ToolCallbackProvider mcpTools(MeetingMinutesService service) {
+        return MethodToolCallbackProvider.builder().toolObjects(service).build();
     }
 
 }

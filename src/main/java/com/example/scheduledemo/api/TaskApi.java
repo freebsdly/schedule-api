@@ -17,7 +17,7 @@ public class TaskApi implements TaskDoc {
     @Override
     @GetMapping(value = "/sync/departments")
     public APIResultVO<Void> syncDepartments() throws Exception {
-        dingTalkService.SyncDepartments();
+        dingTalkService.syncDepartments();
         return APIResultVO.success(null);
     }
 

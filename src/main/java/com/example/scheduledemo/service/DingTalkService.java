@@ -85,7 +85,7 @@ public class DingTalkService {
     }
 
     @Async
-    public synchronized void SyncDepartments() throws Exception {
+    public synchronized void syncDepartments() throws Exception {
         if (syncDepartmentRunning) {
             throw new Exception("sync department task already running");
         }
@@ -169,7 +169,7 @@ public class DingTalkService {
         syncDepartmentRunning = false;
     }
 
-    public QueryCloudRecordTextResponseBody GetCloudRecordText(String unionId, String conferenceId, Long nextToken) throws Exception {
+    public QueryCloudRecordTextResponseBody getCloudRecordText(String unionId, String conferenceId, Long nextToken) throws Exception {
         String token = getAccessToken();
         QueryCloudRecordTextHeaders headers = new QueryCloudRecordTextHeaders();
         headers.setXAcsDingtalkAccessToken(token);
@@ -185,8 +185,8 @@ public class DingTalkService {
         return resp.getBody();
     }
 
-    public String GetCloudRecordAllText(String unionId, String conferenceId) throws Exception {
-        QueryCloudRecordTextResponseBody body = GetCloudRecordText(unionId, conferenceId, null);
+    public String getCloudRecordAllText(String unionId, String conferenceId) throws Exception {
+        QueryCloudRecordTextResponseBody body = getCloudRecordText(unionId, conferenceId, null);
 
         //FIXME: 考虑hasMore情况
         List<String> list = body.getParagraphList().stream()
@@ -209,7 +209,7 @@ public class DingTalkService {
         throw new Exception("event have more than 1 conference id");
     }
 
-    public String GetEventCloudRecordAllText(String unionId, String calendarId, String eventId) throws Exception {
+    public String getEventCloudRecordAllText(String unionId, String calendarId, String eventId) throws Exception {
         String token = getAccessToken();
         RuntimeOptions runtimeOptions = new RuntimeOptions();
 
@@ -238,6 +238,8 @@ public class DingTalkService {
         List<String> list = resp.getBody().getConferenceList().stream().map(p -> p.getConferenceId()).toList();
 
         String conferenceId = filterConferenceIdsByRecordStatus(list);
-        return GetCloudRecordAllText(unionId, conferenceId);
+        return getCloudRecordAllText(unionId, conferenceId);
     }
+
+
 }

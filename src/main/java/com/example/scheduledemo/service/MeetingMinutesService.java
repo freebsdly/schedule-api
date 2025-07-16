@@ -5,6 +5,8 @@ import com.example.scheduledemo.entity.MeetingMinutesDTO;
 import com.example.scheduledemo.entity.MeetingMinutesEntity;
 import com.example.scheduledemo.repository.MeetingMinutesRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.ai.tool.annotation.Tool;
+import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,8 +51,15 @@ public class MeetingMinutesService {
         meetingMinutesRepository.deleteById(id);
     }
 
-    public String generateMeetingMinutes(String unionId, String calendarId, String eventId) throws Exception {
-        String text = dingTalkService.GetEventCloudRecordAllText(unionId, calendarId, eventId);
+    @Tool(description = "generate Meeting Minutes")
+    public String generateMeetingMinutes(
+            @ToolParam(description = "user union id")
+            String unionId,
+            @ToolParam(description = "calendarId")
+            String calendarId,
+            @ToolParam(description = "event id")
+            String eventId) throws Exception {
+        String text = dingTalkService.getEventCloudRecordAllText(unionId, calendarId, eventId);
         return aiService.getMeetingMinutes(text);
     }
 }

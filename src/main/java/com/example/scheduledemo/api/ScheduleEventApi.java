@@ -16,7 +16,7 @@ public class ScheduleEventApi implements ScheduleEventDoc {
     @Override
     @GetMapping(value = "/text")
     public APIResultVO<String> getEventCloudRecordText(@ModelAttribute QueryTextVO vo) throws Exception {
-        String text = dingTalkService.GetEventCloudRecordAllText(vo.getUnionId(), vo.getCalendarId(), vo.getEventId());
+        String text = dingTalkService.getEventCloudRecordAllText(vo.getUnionId(), vo.getCalendarId(), vo.getEventId());
         return APIResultVO.success(text);
     }
 }
