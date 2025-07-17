@@ -42,6 +42,7 @@ public class Config {
         config.setRegionId("central");
         return new com.aliyun.dingtalkdoc_1_0.Client(config);
     }
+
     @Bean
     public ToolCallbackProvider mcpTools(ToolService service) {
         return MethodToolCallbackProvider.builder().toolObjects(service).build();
