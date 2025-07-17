@@ -1,6 +1,6 @@
 package com.example.scheduledemo.api.vo;
 
-import com.example.scheduledemo.entity.MeetingMinutesDTO;
+import com.example.scheduledemo.service.dto.MeetingMinutesDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package com.example.scheduledemo.entity;
+package com.example.scheduledemo.repository.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -21,10 +21,12 @@ public class ScheduleEventEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(name = "dingtalk_event_id")
+    private String dingtalkEventId;
+
     @Column(nullable = false)
     private String summary;
 
-    @Column(nullable = true)
     private String description;
 
     @Column(nullable = false)
@@ -35,6 +37,18 @@ public class ScheduleEventEntity {
 
     private String location;
 
+    @ManyToOne
+    @JoinColumn(name = "organizer_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private EmployeeEntity organizer;
+
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EventAttendeeEntity> attendees;
+
+    private Boolean isAllDay;
+
+    private String importance;
+
+    private String priority;
+
+    private String status;
 }

@@ -8,8 +8,8 @@ import com.aliyun.dingtalkdoc_1_0.models.*;
 import com.aliyun.dingtalkoauth2_1_0.models.GetAccessTokenRequest;
 import com.aliyun.dingtalkoauth2_1_0.models.GetAccessTokenResponse;
 import com.aliyun.teautil.models.RuntimeOptions;
-import com.example.scheduledemo.entity.DepartmentEntity;
-import com.example.scheduledemo.entity.EmployeeEntity;
+import com.example.scheduledemo.repository.entity.DepartmentEntity;
+import com.example.scheduledemo.repository.entity.EmployeeEntity;
 import com.example.scheduledemo.feignclients.DepartmentResponseDTO;
 import com.example.scheduledemo.feignclients.DingTalkFeignClient;
 import com.example.scheduledemo.feignclients.EmployeeQuery;
@@ -19,7 +19,7 @@ import com.example.scheduledemo.repository.EmployeeRepository;
 import com.example.scheduledemo.service.dto.CreateDocDTO;
 import com.example.scheduledemo.service.dto.CreateDocResultDTO;
 import com.example.scheduledemo.service.dto.RecordTextResultDTO;
-import com.example.scheduledemo.service.dto.ServiceDTOMapper;
+import com.example.scheduledemo.service.dto.DTOMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -125,7 +125,7 @@ public class DingTalkService {
                     departmentRepository.save(entity);
                 } else {
                     log.debug("department (id=1) does not exist, create it");
-                    DepartmentEntity entity = ServiceDTOMapper.INSTANCE.toEntity(e);
+                    DepartmentEntity entity = DTOMapper.INSTANCE.toEntity(e);
                     departmentRepository.saveAndFlush(entity);
                 }
 
@@ -162,7 +162,7 @@ public class DingTalkService {
                         entity.setDepartment(e);
                         employeeRepository.saveAndFlush(entity);
                     } else {
-                        EmployeeEntity entity = ServiceDTOMapper.INSTANCE.toEntity(employee);
+                        EmployeeEntity entity = DTOMapper.INSTANCE.toEntity(employee);
                         entity.setDepartment(e);
                         employeeRepository.saveAndFlush(entity);
                     }

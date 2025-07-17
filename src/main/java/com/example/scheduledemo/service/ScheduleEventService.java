@@ -1,6 +1,9 @@
 package com.example.scheduledemo.service;
 
 import com.aliyun.dingtalkcalendar_1_0.models.GetEventResponseBody;
+import com.example.scheduledemo.exception.BusinessException;
+import com.example.scheduledemo.repository.ScheduleEventRepository;
+import com.example.scheduledemo.repository.entity.ScheduleEventEntity;
 import com.example.scheduledemo.service.dto.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -23,12 +26,11 @@ import java.util.Map;
 @Slf4j
 @Service
 public class ScheduleEventService {
+    @Autowired
+    private ScheduleEventRepository scheduleEventRepository;
 
     @Autowired
     private DingTalkService dingTalkService;
-
-    @Autowired
-    private MeetingMinutesService meetingMinutesService;
 
     @Autowired
     private AIService aiService;
@@ -149,6 +151,40 @@ public class ScheduleEventService {
         log.debug("push data: {}", content);
         dingTalkService.pushEventToMultiDimensionalTable(userEventTableId, content);
 
+        // TODO: 推送行动项到多为表
+
         return kbDoc.getDocUrl();
+    }
+
+
+    public void generateActionItems(String eventId) throws Exception {
+    }
+
+    public List<ScheduleEventDTO> getScheduleEvents() {
+        return scheduleEventRepository.findAll().stream().map(DTOMapper.INSTANCE::toDto).toList();
+    }
+
+    public ScheduleEventDTO createScheduleEvent(ScheduleEventDTO scheduleEventDTO) throws Exception {
+        ScheduleEventEntity entity = DTOMapper.INSTANCE.toEntity(scheduleEventDTO);
+        entity.setId(null);
+        ScheduleEventEntity save = scheduleEventRepository.save(entity);
+        return DTOMapper.INSTANCE.toDto(save);
+    }
+
+    public ScheduleEventDTO updateScheduleEvent(ScheduleEventDTO scheduleEventDTO) throws Exception {
+        ScheduleEventEntity exist = scheduleEventRepository.findById(scheduleEventDTO.getId())
+                .orElseThrow(() -> new BusinessException("event not found"));
+
+        ScheduleEventEntity update = DTOMapper.INSTANCE.partialUpdate(scheduleEventDTO, exist);
+        ScheduleEventEntity save = scheduleEventRepository.save(update);
+        return DTOMapper.INSTANCE.toDto(save);
+    }
+
+    public void deleteScheduleEvent(Long id) throws Exception {
+        scheduleEventRepository.deleteById(id);
+    }
+
+    public void deleteScheduleEventByDingTalkId(String id) throws Exception {
+        scheduleEventRepository.deleteByDingtalkEventId(id);
     }
 }

@@ -11,10 +11,7 @@ import java.util.List;
 @Tag(name = "Meeting Minutes API")
 public interface MeetingMinutesDoc {
 
-    @Operation(summary = "Get meeting minutes by id")
-    APIResultVO<MeetingMinutesVO> getMeetingMinutesById(Long id);
-
-    @Operation(summary = "Get all meeting minutes")
+    @Operation(summary = "Query meeting minutes")
     APIResultVO<List<MeetingMinutesVO>> getMeetingMinutes();
 
     @Operation(summary = "Create a new meeting minutes")
@@ -29,9 +26,6 @@ public interface MeetingMinutesDoc {
     @Operation(summary = "Generate meeting minutes using AI")
     APIResultVO<String> generateMeetingMinutes(@ParameterObject GenerateMeetingMinutesVO vo) throws Exception;
 
-
-    @Operation(summary = "Create meeting minutes doc in kb")
-    APIResultVO<String> createMeetingMinutesDoc(CreateDocDTO dto) throws Exception;
 
 
 }

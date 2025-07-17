@@ -1,6 +1,6 @@
 package com.example.scheduledemo.repository;
 
-import com.example.scheduledemo.entity.DepartmentEntity;
+import com.example.scheduledemo.repository.entity.DepartmentEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.stereotype.Repository;

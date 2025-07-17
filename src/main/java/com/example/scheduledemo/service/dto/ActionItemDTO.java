@@ -1,5 +1,6 @@
-package com.example.scheduledemo.entity;
+package com.example.scheduledemo.service.dto;
 
+import com.example.scheduledemo.repository.entity.ActionItemEntity;
 import lombok.Data;
 
 import java.io.Serializable;
