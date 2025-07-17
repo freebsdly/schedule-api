@@ -1,9 +1,9 @@
 package com.example.scheduledemo.api.vo;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.io.Serial;
 import java.io.Serializable;
 
 @Data
@@ -13,6 +13,7 @@ public class APIResultVO<T> implements Serializable {
     private Long code;
     @Schema(description = "错误信息")
     private String message;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @Schema(description = "数据")
     private T data;
 

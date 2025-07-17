@@ -1,5 +1,6 @@
 package com.example.scheduledemo.service;
 
+import com.aliyun.dingtalkcalendar_1_0.models.GetEventResponseBody;
 import com.example.scheduledemo.service.dto.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -15,6 +16,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -63,7 +65,6 @@ public class ScheduleEventService {
     @Autowired
     private SpringTemplateEngine templateEngine;
 
-
     private String getDate(String utcDateTime) {
         Instant parse = Instant.parse(utcDateTime);
         LocalDateTime localDateTime = LocalDateTime.ofInstant(parse, ZoneId.of("Asia/Shanghai"));
@@ -71,26 +72,50 @@ public class ScheduleEventService {
         return localDateTime.format(formatter);
     }
 
-    private String processMarkdown(String templateName, String content) throws JsonProcessingException {
-        Map<String, Object> variables = objectMapper.readValue(content, new TypeReference<Map<String, Object>>() {
-        });
+    private String processMarkdown(String templateName, Map<String, Object> content) throws JsonProcessingException {
         Context context = new Context();
-        context.setVariables(variables);
+        context.setVariables(content);
         return templateEngine.process(templateName, context);
+    }
+
+    private Map<String, Object> answerMapper(String answer, GetEventResponseBody event) throws Exception {
+        Map<String, Object> variables = new HashMap<>();
+        try {
+            variables = objectMapper.readValue(answer, new TypeReference<Map<String, Object>>() {
+            });
+            variables.put("hasError", false);
+        } catch (Exception ex) {
+            log.warn("answer error: {}", ex.getMessage());
+            // 填充空数据确保会议纪要markdown可以继续渲染
+            variables.put("agenda", List.of());
+            variables.put("meetingResolution", List.of());
+            variables.put("actionItems", List.of());
+            variables.put("otherTopics", List.of());
+            variables.put("hasError", true);
+        }
+
+        variables.put("event", event);
+        return variables;
     }
 
     public String generateEventMeetingMinutes(String eventId) throws Exception {
         RecordTextResultDTO info = dingTalkService.getEventCloudRecordAllText(userUnionId, userCalendarId, eventId);
-        DifyBlockResponseDTO meetingMinutes = aiService.getMeetingMinutes(info.getText());
+        Map<String, Object> variables;
         String startDate = getDate(info.getStartTime());
-        String answer = meetingMinutes.getAnswer();
+        String answer = info.getText();
+        if (!answer.isEmpty()) {
+            DifyBlockResponseDTO meetingMinutes = aiService.getMeetingMinutes(answer);
+            answer = meetingMinutes.getAnswer();
+        }
+        GetEventResponseBody event = info.getEvent();
+        variables = answerMapper(answer, event);
         try {
-            answer = processMarkdown(userMeetingMinutesTemplateName, meetingMinutes.getAnswer());
+            answer = processMarkdown(userMeetingMinutesTemplateName, variables);
             log.debug("meeting minutes: {}", answer);
         } catch (Exception e) {
             log.warn("process markdown error: {}", e.getMessage());
         }
-        String docName = String.format("%s Meeting Minutes - %s", startDate, info.getSummary());
+        String docName = String.format("Meeting Minutes %s - %s", startDate, info.getSummary());
         CreateDocDTO docDTO = new CreateDocDTO();
         docDTO.setWorkspaceId(userKbWorkspaceId);
         docDTO.setUnionId(userUnionId);
@@ -105,6 +130,7 @@ public class ScheduleEventService {
         pushDataDTO.setAction("add");
         pushDataDTO.setSummary(info.getSummary());
         pushDataDTO.setKeywords(pushKeywords);
+        pushDataDTO.setMeetingMinutesUrl(kbDoc.getDocUrl());
         String content = objectMapper.writeValueAsString(pushDataDTO);
         dingTalkService.pushEventToMultiDimensionalTable(userEventTableId, content);
 

@@ -229,6 +229,9 @@ public class DingTalkService {
             log.error("Get Event Info error: {}", eventInfo.getStatusCode());
             throw new Exception("Get Event Info error");
         }
+        if (eventInfo.getBody().getOnlineMeetingInfo() == null) {
+            throw new Exception("Get Event Meeting Info error, maybe event have not online meeting");
+        }
         String meetingCode = (String) eventInfo.getBody().getOnlineMeetingInfo().getExtraInfo().get("roomCode");
         String replace = meetingCode.replace(" ", "");
 
@@ -247,7 +250,7 @@ public class DingTalkService {
         String text = getCloudRecordAllText(unionId, conferenceId);
         String summary = eventInfo.getBody().getSummary();
         String startTime = eventInfo.getBody().getStart().getDateTime();
-        return new RecordTextResultDTO(eventId, summary, text, startTime);
+        return new RecordTextResultDTO(eventId, summary, text, startTime, eventInfo.getBody());
     }
 
 

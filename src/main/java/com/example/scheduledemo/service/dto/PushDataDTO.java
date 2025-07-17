@@ -14,4 +14,5 @@ public class PushDataDTO {
     private String action;
     private String summary;
     private List<String> keywords;
+    private String meetingMinutesUrl;
 }

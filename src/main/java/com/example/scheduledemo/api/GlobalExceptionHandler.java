@@ -14,7 +14,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<APIResultVO<Void>> handleAllExceptions(Exception ex) {
         log.error("{}", ex.getMessage());
-        APIResultVO<Void> errorResponse = new APIResultVO<>(500L, "Internal Server Error", null);
+        APIResultVO<Void> errorResponse = new APIResultVO<>(500L, ex.getMessage(), null);
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
