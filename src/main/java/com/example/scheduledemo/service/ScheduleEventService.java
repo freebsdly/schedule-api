@@ -127,11 +127,26 @@ public class ScheduleEventService {
         CreateDocResultDTO kbDoc = dingTalkService.createKBDoc(docDTO);
         // TODO: 推送到多维表, 从事件中获取更多信息
         PushDataDTO pushDataDTO = new PushDataDTO();
-        pushDataDTO.setAction("add");
-        pushDataDTO.setSummary(info.getSummary());
+        pushDataDTO.setId(eventId);
+        pushDataDTO.setAction("update");
+        pushDataDTO.setSummary(event.getSummary());
+        pushDataDTO.setDescription(event.getDescription());
         pushDataDTO.setKeywords(pushKeywords);
         pushDataDTO.setMeetingMinutesUrl(kbDoc.getDocUrl());
+        pushDataDTO.setStatus("已结束");
+        // 从数据库获取优先级和重要性
+        pushDataDTO.setPriority("低");
+        pushDataDTO.setImportance("高");
+        pushDataDTO.setAllDay(event.getIsAllDay());
+        pushDataDTO.setStartTime(event.getStart().getDateTime());
+        pushDataDTO.setEndTime(event.getEnd().getDateTime());
+        if (event.getLocation() != null) {
+            pushDataDTO.setLocation(event.getLocation().getDisplayName());
+        }
+        pushDataDTO.setOrganizer(new IdDTO(event.getOrganizer().getId()));
+        pushDataDTO.setAttendees(event.getAttendees().stream().map(attendee -> new IdDTO(attendee.getId())).toList());
         String content = objectMapper.writeValueAsString(pushDataDTO);
+        log.debug("push data: {}", content);
         dingTalkService.pushEventToMultiDimensionalTable(userEventTableId, content);
 
         return kbDoc.getDocUrl();
