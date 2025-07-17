@@ -1,6 +1,6 @@
 package com.example.scheduledemo;
 
-import com.example.scheduledemo.service.MeetingMinutesService;
+import com.example.scheduledemo.service.ToolService;
 import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.ai.tool.method.MethodToolCallbackProvider;
 import org.springframework.context.annotation.Bean;
@@ -36,7 +36,14 @@ public class Config {
     }
 
     @Bean
-    public ToolCallbackProvider mcpTools(MeetingMinutesService service) {
+    public static com.aliyun.dingtalkdoc_1_0.Client docClient() throws Exception {
+        com.aliyun.teaopenapi.models.Config config = new com.aliyun.teaopenapi.models.Config();
+        config.setProtocol("https");
+        config.setRegionId("central");
+        return new com.aliyun.dingtalkdoc_1_0.Client(config);
+    }
+    @Bean
+    public ToolCallbackProvider mcpTools(ToolService service) {
         return MethodToolCallbackProvider.builder().toolObjects(service).build();
     }
 

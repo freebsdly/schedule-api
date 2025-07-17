@@ -1,6 +1,7 @@
 package com.example.scheduledemo.api;
 
 import com.example.scheduledemo.api.vo.*;
+import com.example.scheduledemo.service.dto.CreateDocDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springdoc.core.annotations.ParameterObject;
@@ -27,6 +28,10 @@ public interface MeetingMinutesDoc {
 
     @Operation(summary = "Generate meeting minutes using AI")
     APIResultVO<String> generateMeetingMinutes(@ParameterObject GenerateMeetingMinutesVO vo) throws Exception;
+
+
+    @Operation(summary = "Create meeting minutes doc in kb")
+    APIResultVO<String> createMeetingMinutesDoc(CreateDocDTO dto) throws Exception;
 
 
 }

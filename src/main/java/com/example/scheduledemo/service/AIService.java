@@ -1,9 +1,6 @@
 package com.example.scheduledemo.service;
 
-import com.example.scheduledemo.service.dto.DifyRequestBodyDTO;
-import com.example.scheduledemo.service.dto.DifySSEResponseDTO;
-import com.example.scheduledemo.service.dto.DifySSEResponseDataDTO;
-import com.example.scheduledemo.service.dto.DifySSEResponseOutputsDTO;
+import com.example.scheduledemo.service.dto.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -39,7 +36,7 @@ public class AIService {
      * @return
      * @throws Exception
      */
-    public String getMeetingMinutes(String content) throws Exception {
+    public DifyBlockResponseDTO getMeetingMinutes(String content) throws Exception {
         DifyRequestBodyDTO body = DifyRequestBodyDTO.builder()
                 .user(appName)
                 .query(content)
@@ -47,13 +44,13 @@ public class AIService {
                 .responseMode("blocking")
                 .build();
 
-        String result = webClient.post()
+        DifyBlockResponseDTO result = webClient.post()
                 .uri(difyChatUrl)
                 .header("Authorization", String.format("Bearer %s", difyMeetingMinutesApiKey))
                 .header("Content-Type", "application/json")
                 .bodyValue(body)
                 .retrieve()
-                .bodyToMono(String.class)
+                .bodyToMono(DifyBlockResponseDTO.class)
                 .block();
         log.debug("result: {}", result);
         return result;

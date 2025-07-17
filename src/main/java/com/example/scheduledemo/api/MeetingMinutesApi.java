@@ -2,7 +2,11 @@ package com.example.scheduledemo.api;
 
 import com.example.scheduledemo.api.vo.*;
 import com.example.scheduledemo.entity.MeetingMinutesDTO;
+import com.example.scheduledemo.service.DingTalkService;
 import com.example.scheduledemo.service.MeetingMinutesService;
+import com.example.scheduledemo.service.ToolService;
+import com.example.scheduledemo.service.dto.CreateDocDTO;
+import com.example.scheduledemo.service.dto.CreateDocResultDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +18,11 @@ public class MeetingMinutesApi implements MeetingMinutesDoc {
 
     @Autowired
     private MeetingMinutesService meetingMinutesService;
+
+    @Autowired
+    private ToolService toolService;
+    @Autowired
+    private DingTalkService dingTalkService;
 
     @GetMapping("/{id}")
     @Override
@@ -55,8 +64,15 @@ public class MeetingMinutesApi implements MeetingMinutesDoc {
     @Override
     @PostMapping(value = "/generate")
     public APIResultVO<String> generateMeetingMinutes(@ModelAttribute GenerateMeetingMinutesVO vo) throws Exception {
-        String meetingMinutes = meetingMinutesService.generateMeetingMinutes(vo.getUnionId(), vo.getCalendarId(), vo.getEventId());
+        String meetingMinutes = toolService.generateMeetingMinutes(vo.getUnionId(), vo.getCalendarId(), vo.getEventId());
         return APIResultVO.success(meetingMinutes);
+    }
+
+    @Override
+    @PostMapping(value = "/docs")
+    public APIResultVO<String> createMeetingMinutesDoc(@RequestBody CreateDocDTO dto) throws Exception {
+        CreateDocResultDTO kbDoc = dingTalkService.createKBDoc(dto);
+        return APIResultVO.success(kbDoc.getDocUrl());
     }
 
 }

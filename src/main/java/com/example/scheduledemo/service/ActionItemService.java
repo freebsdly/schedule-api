@@ -5,8 +5,6 @@ import com.example.scheduledemo.entity.ActionItemEntity;
 import com.example.scheduledemo.entity.EntityMapper;
 import com.example.scheduledemo.repository.ActionItemRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.tool.annotation.Tool;
-import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,17 +29,5 @@ public class ActionItemService {
                 () -> new RuntimeException("Action item not found")
         );
         return EntityMapper.INSTANCE.toDto(actionItemNotFound);
-    }
-
-    @Tool(description = "Get weather alerts for a US state")
-    public String getAlerts(
-            @ToolParam(description = "Two-letter US state code (e.g. CA, NY)") String state) {
-        // Returns active alerts including:
-        // - Event type
-        // - Affected area
-        // - Severity
-        // - Description
-        // - Safety instructions
-        return null;
     }
 }
