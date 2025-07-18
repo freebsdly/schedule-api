@@ -1,14 +1,14 @@
 package com.example.scheduledemo.service;
 
 import com.aliyun.dingtalkim_1_0.models.*;
-import com.aliyun.teautil.models.RuntimeOptions;
 import com.dingtalk.open.app.api.callback.OpenDingTalkCallbackListener;
 import com.dingtalk.open.app.api.models.bot.ChatbotMessage;
 import com.example.scheduledemo.exception.BusinessException;
+import com.example.scheduledemo.service.dto.IntentRecognitionDTO;
+import com.example.scheduledemo.service.dto.ScheduleEventDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -17,14 +17,8 @@ import java.util.UUID;
 @Component
 public class RobotConsumer implements OpenDingTalkCallbackListener<ChatbotMessage, Void> {
 
-    @Value("${dingtalk.ak}")
-    private String appKey;
-
     @Autowired
     private DingTalkService dingTalkService;
-
-    @Autowired
-    private com.aliyun.dingtalkim_1_0.Client imClient;
 
 
     private final String messageCardTemplate = """
@@ -70,7 +64,7 @@ public class RobotConsumer implements OpenDingTalkCallbackListener<ChatbotMessag
         request.setCardTemplateId("StandardCard");
         request.setCardBizId(cardInstanceId.toString());
         request.setCardData(cardData);
-        request.setRobotCode(appKey);
+        request.setRobotCode(dingTalkService.getAppKey());
         request.setSendOptions(new SendRobotInteractiveCardRequest.SendRobotInteractiveCardRequestSendOptions());
         request.setPullStrategy(false);
 
@@ -87,12 +81,12 @@ public class RobotConsumer implements OpenDingTalkCallbackListener<ChatbotMessag
         }
 
         try {
-            sendInteractiveCard(request);
+            dingTalkService.sendInteractiveCard(request);
             String returnMessage = getAnswerString(message);
             UpdateRobotInteractiveCardRequest updateRequest = new UpdateRobotInteractiveCardRequest();
             updateRequest.setCardBizId(cardInstanceId.toString());
             updateRequest.setCardData(String.format(messageCardTemplate, "明天日程列表", returnMessage));
-            updateInteractiveCard(updateRequest);
+            dingTalkService.updateInteractiveCard(updateRequest);
 
         } catch (Exception e) {
             log.warn("robot send message failed. {}", e.getMessage());
@@ -101,17 +95,20 @@ public class RobotConsumer implements OpenDingTalkCallbackListener<ChatbotMessag
         return null;
     }
 
-    private static @NotNull String getAnswerString(ChatbotMessage message) {
+    private String getAnswerString(ChatbotMessage message) throws Exception {
         String text = switch (message.getMsgtype()) {
             case "text" -> message.getText().getContent();
             case "audio" -> {
-                // TODO: 音频处理
+                String downloadCode = message.getContent().getDownloadCode();
+                String url = dingTalkService.getAudioMessageDownloadUrl(downloadCode);
+                // TODO: Audio file to text
                 yield "明日日程";
             }
             default -> {
                 throw new BusinessException("unsupported message type.");
             }
         };
+        IntentRecognitionDTO intent = userIntentRecognition(text);
         //TODO: 按正常逻辑生成返回结果
         String returnMessage = "未知";
         if (text.contains("明天日程")) {
@@ -125,30 +122,12 @@ public class RobotConsumer implements OpenDingTalkCallbackListener<ChatbotMessag
         return returnMessage;
     }
 
-    private void sendInteractiveCard(SendRobotInteractiveCardRequest request) throws Exception {
-        String token = dingTalkService.getAccessToken();
-        SendRobotInteractiveCardHeaders headers = new SendRobotInteractiveCardHeaders();
-        headers.setXAcsDingtalkAccessToken(token);
-        RuntimeOptions runtimeOptions = new RuntimeOptions();
-
-        SendRobotInteractiveCardResponse resp = imClient.sendRobotInteractiveCardWithOptions(request, headers, runtimeOptions);
-        if (resp.getStatusCode() != 200) {
-            log.error("send interactive card failed. code: {}", resp.getStatusCode());
-            throw new RuntimeException("send interactive card failed.");
-        }
+    /**
+     * 用户意图识别
+     * @param ask
+     * @return
+     */
+    private IntentRecognitionDTO userIntentRecognition(String ask) {
+        return new IntentRecognitionDTO();
     }
-
-    private void updateInteractiveCard(UpdateRobotInteractiveCardRequest request) throws Exception {
-        String token = dingTalkService.getAccessToken();
-        UpdateRobotInteractiveCardHeaders headers = new UpdateRobotInteractiveCardHeaders();
-        headers.setXAcsDingtalkAccessToken(token);
-        RuntimeOptions runtimeOptions = new RuntimeOptions();
-
-        UpdateRobotInteractiveCardResponse resp = imClient.updateRobotInteractiveCardWithOptions(request, headers, runtimeOptions);
-        if (resp.getStatusCode() != 200) {
-            log.error("update interactive card failed. code: {}", resp.getStatusCode());
-            throw new RuntimeException("update interactive card failed.");
-        }
-    }
-
 }

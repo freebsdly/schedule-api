@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -17,7 +18,7 @@ public class RobotSendMessageVO {
     private String msgKey;
 
     @Schema(description = "消息内容")
-    private String message;
+    private Map<String, Object> msgParam;
 
     @Schema(description = "接收用户ID列表")
     private List<String> userIds;

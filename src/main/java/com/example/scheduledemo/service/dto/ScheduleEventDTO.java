@@ -28,4 +28,6 @@ public class ScheduleEventDTO implements Serializable {
     String importance;
     String priority;
     String status;
+    String calendarId;
+
 }

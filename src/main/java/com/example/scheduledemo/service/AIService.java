@@ -73,8 +73,8 @@ public class AIService {
                 .bodyToFlux(DifySSEResponseDTO.class)
                 .subscribe(e -> {
                     if (e.getEvent().equals("workflow_finished")) {
-                        DifySSEResponseDataDTO data = e.getData();
-                        DifySSEResponseOutputsDTO outputs = data.getOutputs();
+                        DifySSEResponseDTO.SSEResponseData data = e.getData();
+                        DifySSEResponseDTO.SSEResponseOutputs outputs = data.getOutputs();
                         String answer = outputs.getAnswer();
                         log.info("{}, Dify response: {}", e.getEvent(), answer);
                     }

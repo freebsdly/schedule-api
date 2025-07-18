@@ -7,6 +7,7 @@ import com.example.scheduledemo.service.DingTalkService;
 import com.example.scheduledemo.service.dto.CreateDocDTO;
 import com.example.scheduledemo.service.dto.CreateDocResultDTO;
 import com.example.scheduledemo.service.dto.RecordTextResultDTO;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +17,9 @@ public class DingTalkApi implements DingTalkDoc {
 
     @Autowired
     private DingTalkService dingTalkService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Override
     @GetMapping(value = "/calendars/events/cloud-records/text")
@@ -34,7 +38,8 @@ public class DingTalkApi implements DingTalkDoc {
     @Override
     @PostMapping(value = "/robot/messages")
     public APIResultVO<Void> robotBatchSendMessage(@RequestBody RobotSendMessageVO vo) throws Exception {
-        dingTalkService.robotBatchSendMessage(vo.getUserIds(), vo.getMsgKey(), vo.getMessage());
+        String params = objectMapper.writeValueAsString(vo.getMsgParam());
+        dingTalkService.robotBatchSendMessage(vo.getUserIds(), vo.getMsgKey(), params);
         return APIResultVO.success(null);
     }
 }

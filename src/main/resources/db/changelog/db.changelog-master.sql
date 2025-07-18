@@ -45,3 +45,160 @@ ALTER TABLE meeting_minutes ADD CONSTRAINT ukc9iao7vks2k07m138jjjvlb4v UNIQUE (e
 -- changeset itoutsource.cz1731:1752648834870-15
 ALTER TABLE action_items ADD CONSTRAINT fkr0lmmac1f9r89ma8vxbs55hcl FOREIGN KEY (meeting_minute_id) REFERENCES meeting_minutes (id) ON DELETE NO ACTION;
 
+
+CREATE SEQUENCE IF NOT EXISTS action_items_seq START WITH 1 INCREMENT BY 50;
+
+CREATE SEQUENCE IF NOT EXISTS departments_seq START WITH 1 INCREMENT BY 50;
+
+CREATE SEQUENCE IF NOT EXISTS employees_seq START WITH 1 INCREMENT BY 50;
+
+CREATE SEQUENCE IF NOT EXISTS event_attendees_seq START WITH 1 INCREMENT BY 50;
+
+CREATE SEQUENCE IF NOT EXISTS meeting_minutes_seq START WITH 1 INCREMENT BY 50;
+
+CREATE SEQUENCE IF NOT EXISTS schedule_events_seq START WITH 1 INCREMENT BY 50;
+
+CREATE TABLE action_items
+(
+    id                BIGINT NOT NULL,
+    name              VARCHAR(255),
+    description       VARCHAR(255),
+    status            VARCHAR(255),
+    due_date          TIMESTAMP WITHOUT TIME ZONE,
+    meeting_minute_id BIGINT,
+    CONSTRAINT pk_action_items PRIMARY KEY (id)
+);
+
+CREATE TABLE departments
+(
+    id               BIGINT NOT NULL,
+    name             VARCHAR(255),
+    dingtalk_dept_id BIGINT,
+    parent_id        BIGINT,
+    CONSTRAINT pk_departments PRIMARY KEY (id)
+);
+
+CREATE TABLE employees
+(
+    id            BIGINT NOT NULL,
+    name          VARCHAR(255),
+    email         VARCHAR(255),
+    badge         VARCHAR(255),
+    union_id      VARCHAR(255),
+    department_id BIGINT,
+    CONSTRAINT pk_employees PRIMARY KEY (id)
+);
+
+CREATE TABLE event_attendees
+(
+    id          BIGINT NOT NULL,
+    employee_id BIGINT,
+    event_id    BIGINT,
+    CONSTRAINT pk_event_attendees PRIMARY KEY (id)
+);
+
+CREATE TABLE meeting_minutes
+(
+    id       BIGINT NOT NULL,
+    raw_data VARCHAR(255),
+    event_id BIGINT,
+    CONSTRAINT pk_meeting_minutes PRIMARY KEY (id)
+);
+
+CREATE TABLE schedule_events
+(
+    id          BIGINT                      NOT NULL,
+    summary     VARCHAR(255)                NOT NULL,
+    description VARCHAR(255),
+    start_time  TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    end_time    TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    location    VARCHAR(255),
+    CONSTRAINT pk_schedule_events PRIMARY KEY (id)
+);
+
+ALTER TABLE event_attendees
+    ADD CONSTRAINT uc_event_attendees_employee UNIQUE (employee_id);
+
+ALTER TABLE meeting_minutes
+    ADD CONSTRAINT uc_meeting_minutes_event UNIQUE (event_id);
+
+ALTER TABLE action_items
+    ADD CONSTRAINT FK_ACTION_ITEMS_ON_MEETING_MINUTE FOREIGN KEY (meeting_minute_id) REFERENCES meeting_minutes (id);
+CREATE SEQUENCE IF NOT EXISTS action_items_seq START WITH 1 INCREMENT BY 50;
+
+CREATE SEQUENCE IF NOT EXISTS departments_seq START WITH 1 INCREMENT BY 50;
+
+CREATE SEQUENCE IF NOT EXISTS employees_seq START WITH 1 INCREMENT BY 50;
+
+CREATE SEQUENCE IF NOT EXISTS event_attendees_seq START WITH 1 INCREMENT BY 50;
+
+CREATE SEQUENCE IF NOT EXISTS meeting_minutes_seq START WITH 1 INCREMENT BY 50;
+
+CREATE SEQUENCE IF NOT EXISTS schedule_events_seq START WITH 1 INCREMENT BY 50;
+
+CREATE TABLE action_items
+(
+    id                BIGINT NOT NULL,
+    name              VARCHAR(255),
+    description       VARCHAR(255),
+    status            VARCHAR(255),
+    due_date          TIMESTAMP WITHOUT TIME ZONE,
+    meeting_minute_id BIGINT,
+    CONSTRAINT pk_action_items PRIMARY KEY (id)
+);
+
+CREATE TABLE departments
+(
+    id               BIGINT NOT NULL,
+    name             VARCHAR(255),
+    dingtalk_dept_id BIGINT,
+    parent_id        BIGINT,
+    CONSTRAINT pk_departments PRIMARY KEY (id)
+);
+
+CREATE TABLE employees
+(
+    id            BIGINT NOT NULL,
+    name          VARCHAR(255),
+    email         VARCHAR(255),
+    badge         VARCHAR(255),
+    union_id      VARCHAR(255),
+    department_id BIGINT,
+    CONSTRAINT pk_employees PRIMARY KEY (id)
+);
+
+CREATE TABLE event_attendees
+(
+    id          BIGINT NOT NULL,
+    employee_id BIGINT,
+    event_id    BIGINT,
+    CONSTRAINT pk_event_attendees PRIMARY KEY (id)
+);
+
+CREATE TABLE meeting_minutes
+(
+    id       BIGINT NOT NULL,
+    raw_data VARCHAR(255),
+    event_id BIGINT,
+    CONSTRAINT pk_meeting_minutes PRIMARY KEY (id)
+);
+
+CREATE TABLE schedule_events
+(
+    id          BIGINT                      NOT NULL,
+    summary     VARCHAR(255)                NOT NULL,
+    description VARCHAR(255),
+    start_time  TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    end_time    TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    location    VARCHAR(255),
+    CONSTRAINT pk_schedule_events PRIMARY KEY (id)
+);
+
+ALTER TABLE event_attendees
+    ADD CONSTRAINT uc_event_attendees_employee UNIQUE (employee_id);
+
+ALTER TABLE meeting_minutes
+    ADD CONSTRAINT uc_meeting_minutes_event UNIQUE (event_id);
+
+ALTER TABLE action_items
+    ADD CONSTRAINT FK_ACTION_ITEMS_ON_MEETING_MINUTE FOREIGN KEY (meeting_minute_id) REFERENCES meeting_minutes (id);

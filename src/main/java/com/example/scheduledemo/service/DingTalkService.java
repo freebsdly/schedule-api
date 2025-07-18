@@ -1,14 +1,15 @@
 package com.example.scheduledemo.service;
 
-import com.aliyun.dingtalkcalendar_1_0.models.GetEventHeaders;
-import com.aliyun.dingtalkcalendar_1_0.models.GetEventRequest;
-import com.aliyun.dingtalkcalendar_1_0.models.GetEventResponse;
+import com.aliyun.dingtalkcalendar_1_0.models.*;
 import com.aliyun.dingtalkconference_1_0.models.*;
 import com.aliyun.dingtalkdoc_1_0.models.*;
+import com.aliyun.dingtalkim_1_0.models.*;
 import com.aliyun.dingtalkoauth2_1_0.models.GetAccessTokenRequest;
 import com.aliyun.dingtalkoauth2_1_0.models.GetAccessTokenResponse;
-import com.aliyun.dingtalkrobot_1_0.models.BatchSendOTOHeaders;
-import com.aliyun.dingtalkrobot_1_0.models.BatchSendOTORequest;
+import com.aliyun.dingtalkrobot_1_0.models.*;
+import com.aliyun.tea.TeaConverter;
+import com.aliyun.tea.TeaException;
+import com.aliyun.tea.TeaPair;
 import com.aliyun.teautil.models.RuntimeOptions;
 import com.dingtalk.api.DefaultDingTalkClient;
 import com.dingtalk.api.request.OapiV2DepartmentListsubRequest;
@@ -20,10 +21,8 @@ import com.example.scheduledemo.repository.DepartmentRepository;
 import com.example.scheduledemo.repository.EmployeeRepository;
 import com.example.scheduledemo.repository.entity.DepartmentEntity;
 import com.example.scheduledemo.repository.entity.EmployeeEntity;
-import com.example.scheduledemo.service.dto.CreateDocDTO;
-import com.example.scheduledemo.service.dto.CreateDocResultDTO;
-import com.example.scheduledemo.service.dto.DTOMapper;
-import com.example.scheduledemo.service.dto.RecordTextResultDTO;
+import com.example.scheduledemo.service.dto.*;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,10 +30,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -56,11 +52,15 @@ public class DingTalkService {
     private com.aliyun.dingtalkrobot_1_0.Client robotClient;
 
     @Autowired
+    private com.aliyun.dingtalkim_1_0.Client imClient;
+
+    @Autowired
     private DepartmentRepository departmentRepository;
 
     @Autowired
     private DingTalkFeignClient dingTalkFeignClient;
 
+    @Getter
     @Value("${dingtalk.ak}")
     private String appKey;
 
@@ -338,5 +338,81 @@ public class DingTalkService {
             throw new Exception(resp.getErrmsg());
         }
         return resp.getResult();
+    }
+
+    public void sendInteractiveCard(SendRobotInteractiveCardRequest request) throws Exception {
+        String token = getAccessToken();
+        SendRobotInteractiveCardHeaders headers = new SendRobotInteractiveCardHeaders();
+        headers.setXAcsDingtalkAccessToken(token);
+        RuntimeOptions runtimeOptions = new RuntimeOptions();
+
+        SendRobotInteractiveCardResponse resp = imClient.sendRobotInteractiveCardWithOptions(request, headers, runtimeOptions);
+        if (resp.getStatusCode() != 200) {
+            log.error("send interactive card failed. code: {}", resp.getStatusCode());
+            throw new RuntimeException("send interactive card failed.");
+        }
+    }
+
+    public void updateInteractiveCard(UpdateRobotInteractiveCardRequest request) throws Exception {
+        String token = getAccessToken();
+        UpdateRobotInteractiveCardHeaders headers = new UpdateRobotInteractiveCardHeaders();
+        headers.setXAcsDingtalkAccessToken(token);
+        RuntimeOptions runtimeOptions = new RuntimeOptions();
+
+        UpdateRobotInteractiveCardResponse resp = imClient.updateRobotInteractiveCardWithOptions(request, headers, runtimeOptions);
+        if (resp.getStatusCode() != 200) {
+            log.error("update interactive card failed. code: {}", resp.getStatusCode());
+            throw new RuntimeException("update interactive card failed.");
+        }
+    }
+
+    public String getAudioMessageDownloadUrl(String downloadCode) throws Exception {
+        String token = getAccessToken();
+        RobotMessageFileDownloadHeaders headers = new RobotMessageFileDownloadHeaders();
+        headers.setXAcsDingtalkAccessToken(token);
+        RobotMessageFileDownloadRequest request = new RobotMessageFileDownloadRequest()
+                .setDownloadCode(downloadCode)
+                .setRobotCode(appKey);
+        RuntimeOptions runtimeOptions = new RuntimeOptions();
+        RobotMessageFileDownloadResponse resp = robotClient.robotMessageFileDownloadWithOptions(request, headers, runtimeOptions);
+        if (resp.getStatusCode() != 200) {
+            log.error("download audio message file failed. code: {}", resp.getStatusCode());
+            throw new RuntimeException("download audio message file failed.");
+        }
+        return resp.getBody().getDownloadUrl();
+    }
+
+    public void createCalendarEvent(ScheduleEventDTO dto) throws Exception {
+        CreateEventHeaders headers = new CreateEventHeaders()
+                .setXAcsDingtalkAccessToken(getAccessToken());
+        CreateEventRequest.CreateEventRequestOnlineMeetingInfo onlineMeetingInfo = new CreateEventRequest.CreateEventRequestOnlineMeetingInfo()
+                .setType("dingtalk");
+        CreateEventRequest.CreateEventRequestLocation location = new CreateEventRequest.CreateEventRequestLocation()
+                .setDisplayName(dto.getLocation());
+        CreateEventRequest.CreateEventRequestAttendees attendees0 = new CreateEventRequest.CreateEventRequestAttendees()
+                .setId("iiiP35sJxxx")
+                .setIsOptional(false);
+        CreateEventRequest.CreateEventRequestEnd end = new CreateEventRequest.CreateEventRequestEnd()
+                .setDate("2020-09-21")
+                .setDateTime("2021-09-20T10:15:30+08:00")
+                .setTimeZone("Asia/Shanghai");
+        CreateEventRequest.CreateEventRequestStart start = new CreateEventRequest.CreateEventRequestStart()
+                .setDate("2021-09-20")
+                .setDateTime("2021-09-20T10:15:30+08:00")
+                .setTimeZone("Asia/Shanghai");
+        CreateEventRequest createEventRequest = new CreateEventRequest()
+                .setSummary(dto.getSummary())
+                .setDescription(dto.getDescription())
+                .setStart(start)
+                .setEnd(end)
+                .setIsAllDay(false)
+                .setAttendees(List.of(
+                        attendees0
+                ))
+                .setLocation(location)
+                .setOnlineMeetingInfo(onlineMeetingInfo);
+
+        RuntimeOptions runtimeOptions = new RuntimeOptions();
+        calendarClient.createEventWithOptions(dto.getOrganizer().getUnionId(), dto.getCalendarId(), createEventRequest, headers, runtimeOptions);
     }
 }
