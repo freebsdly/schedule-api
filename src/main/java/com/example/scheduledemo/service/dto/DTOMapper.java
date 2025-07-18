@@ -51,13 +51,20 @@ public interface DTOMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     EmployeeEntity partialUpdate(EmployeeDTO employeeDTO, @MappingTarget EmployeeEntity employeeEntity);
 
-    ActionItemEntity toEntity(ActionItemDTO actionItemDto);
+    /**
+     * Schedule Event Mapper
+     */
 
-    ActionItemDTO toDto(ActionItemEntity actionItemEntity);
+    ScheduleEventEntity toEntity(ScheduleEventDTO dto);
+
+    ScheduleEventDTO toDto(ScheduleEventEntity scheduleEventEntity);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    ActionItemEntity partialUpdate(ActionItemDTO actionItemDto, @MappingTarget ActionItemEntity actionItemEntity);
+    ScheduleEventEntity partialUpdate(ScheduleEventDTO scheduleEventDTO, @MappingTarget ScheduleEventEntity scheduleEventEntity);
 
+    /**
+     * Meeting Minutes Mapper
+     */
     MeetingMinutesEntity toEntity(MeetingMinutesDTO meetingMinutesDto);
 
     MeetingMinutesDTO toDto(MeetingMinutesEntity meetingMinutesEntity);
@@ -65,16 +72,17 @@ public interface DTOMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     MeetingMinutesEntity partialUpdate(MeetingMinutesDTO meetingMinutesDto, @MappingTarget MeetingMinutesEntity meetingMinutesEntity);
 
-    ScheduleEventEntity toEntity(ScheduleEventDTO scheduleEventDTO);
-
-    ScheduleEventDTO toDto(ScheduleEventEntity scheduleEventEntity);
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    ScheduleEventEntity partialUpdate(ScheduleEventDTO scheduleEventDTO, @MappingTarget ScheduleEventEntity scheduleEventEntity);
-
     @AfterMapping
     default void linkActionItems(@MappingTarget MeetingMinutesEntity meetingMinutesEntity) {
         meetingMinutesEntity.getActionItems().forEach(actionItem -> actionItem.setMeetingMinute(meetingMinutesEntity));
     }
+
+    ActionItemEntity toEntity(ActionItemDTO actionItemDto);
+
+    ActionItemDTO toDto(ActionItemEntity actionItemEntity);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    ActionItemEntity partialUpdate(ActionItemDTO actionItemDto, @MappingTarget ActionItemEntity actionItemEntity);
+
 
 }

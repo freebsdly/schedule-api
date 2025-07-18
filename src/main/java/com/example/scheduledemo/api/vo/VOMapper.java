@@ -21,4 +21,5 @@ public interface VOMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "dingtalkEventId", source = "id")
     ScheduleEventDTO toDTO(OperateEventVO vo);
+
 }

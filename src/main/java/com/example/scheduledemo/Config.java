@@ -44,6 +44,22 @@ public class Config {
     }
 
     @Bean
+    public static com.aliyun.dingtalkim_1_0.Client imClient() throws Exception {
+        com.aliyun.teaopenapi.models.Config config = new com.aliyun.teaopenapi.models.Config();
+        config.setProtocol("https");
+        config.setRegionId("central");
+        return new com.aliyun.dingtalkim_1_0.Client(config);
+    }
+
+    @Bean
+    public static com.aliyun.dingtalkcard_1_0.Client cardClient() throws Exception {
+        com.aliyun.teaopenapi.models.Config config = new com.aliyun.teaopenapi.models.Config();
+        config.setProtocol("https");
+        config.setRegionId("central");
+        return new com.aliyun.dingtalkcard_1_0.Client(config);
+    }
+
+    @Bean
     public ToolCallbackProvider mcpTools(ToolService service) {
         return MethodToolCallbackProvider.builder().toolObjects(service).build();
     }

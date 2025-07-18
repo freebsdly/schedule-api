@@ -1,9 +1,9 @@
 package com.example.scheduledemo.api;
 
 import com.example.scheduledemo.api.vo.*;
-import com.example.scheduledemo.service.dto.MeetingMinutesDTO;
 import com.example.scheduledemo.service.MeetingMinutesService;
 import com.example.scheduledemo.service.ToolService;
+import com.example.scheduledemo.service.dto.MeetingMinutesDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,13 +47,6 @@ public class MeetingMinutesApi implements MeetingMinutesDoc {
     public APIResultVO<Long> deleteMeetingMinutes(@PathVariable Long id) {
         meetingMinutesService.deleteMeetingMinutes(id);
         return APIResultVO.success(id);
-    }
-
-    @Override
-    @PostMapping(value = "/generate")
-    public APIResultVO<String> generateMeetingMinutes(@ModelAttribute GenerateMeetingMinutesVO vo) throws Exception {
-        String meetingMinutes = toolService.generateMeetingMinutes(vo.getUnionId(), vo.getCalendarId(), vo.getEventId());
-        return APIResultVO.success(meetingMinutes);
     }
 
 }

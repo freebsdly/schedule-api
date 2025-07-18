@@ -22,10 +22,4 @@ public interface MeetingMinutesDoc {
 
     @Operation(summary = "Delete a meeting minutes")
     APIResultVO<Long> deleteMeetingMinutes(Long id);
-
-    @Operation(summary = "Generate meeting minutes using AI")
-    APIResultVO<String> generateMeetingMinutes(@ParameterObject GenerateMeetingMinutesVO vo) throws Exception;
-
-
-
 }

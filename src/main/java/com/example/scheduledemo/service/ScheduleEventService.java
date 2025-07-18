@@ -164,8 +164,8 @@ public class ScheduleEventService {
         return scheduleEventRepository.findAll().stream().map(DTOMapper.INSTANCE::toDto).toList();
     }
 
-    public ScheduleEventDTO createScheduleEvent(ScheduleEventDTO scheduleEventDTO) throws Exception {
-        ScheduleEventEntity entity = DTOMapper.INSTANCE.toEntity(scheduleEventDTO);
+    public ScheduleEventDTO createScheduleEvent(ScheduleEventDTO dto) throws Exception {
+        ScheduleEventEntity entity = DTOMapper.INSTANCE.toEntity(dto);
         entity.setId(null);
         ScheduleEventEntity save = scheduleEventRepository.save(entity);
         return DTOMapper.INSTANCE.toDto(save);
@@ -176,6 +176,14 @@ public class ScheduleEventService {
                 .orElseThrow(() -> new BusinessException("event not found"));
 
         ScheduleEventEntity update = DTOMapper.INSTANCE.partialUpdate(scheduleEventDTO, exist);
+        ScheduleEventEntity save = scheduleEventRepository.save(update);
+        return DTOMapper.INSTANCE.toDto(save);
+    }
+
+    public ScheduleEventDTO updateScheduleEventByDingTalkId(ScheduleEventDTO dto) throws Exception {
+        ScheduleEventEntity exist = scheduleEventRepository.findByDingtalkEventId(dto.getDingtalkEventId())
+                .orElseThrow(() -> new BusinessException("event not found"));
+        ScheduleEventEntity update = DTOMapper.INSTANCE.partialUpdate(dto, exist);
         ScheduleEventEntity save = scheduleEventRepository.save(update);
         return DTOMapper.INSTANCE.toDto(save);
     }
