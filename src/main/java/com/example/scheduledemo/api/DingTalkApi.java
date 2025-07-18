@@ -2,6 +2,7 @@ package com.example.scheduledemo.api;
 
 import com.example.scheduledemo.api.vo.APIResultVO;
 import com.example.scheduledemo.api.vo.QueryTextVO;
+import com.example.scheduledemo.api.vo.RobotSendMessageVO;
 import com.example.scheduledemo.service.DingTalkService;
 import com.example.scheduledemo.service.dto.CreateDocDTO;
 import com.example.scheduledemo.service.dto.CreateDocResultDTO;
@@ -28,5 +29,12 @@ public class DingTalkApi implements DingTalkDoc {
     public APIResultVO<String> createKnowledgeBaseDoc(@RequestBody CreateDocDTO dto) throws Exception {
         CreateDocResultDTO kbDoc = dingTalkService.createKBDoc(dto);
         return APIResultVO.success(kbDoc.getDocUrl());
+    }
+
+    @Override
+    @PostMapping(value = "/robot/messages")
+    public APIResultVO<Void> robotBatchSendMessage(@RequestBody RobotSendMessageVO vo) throws Exception {
+        dingTalkService.robotBatchSendMessage(vo.getUserIds(), vo.getMsgKey(), vo.getMessage());
+        return APIResultVO.success(null);
     }
 }

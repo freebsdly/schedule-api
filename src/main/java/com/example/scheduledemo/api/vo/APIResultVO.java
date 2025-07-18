@@ -23,6 +23,9 @@ public class APIResultVO<T> implements Serializable {
         this.data = data;
     }
 
+    public static <T> APIResultVO<T> success() {
+        return new APIResultVO<>(0L, "success", null);
+    }
 
     public static <T> APIResultVO<T> success(T data) {
         return new APIResultVO<>(0L, "success", data);

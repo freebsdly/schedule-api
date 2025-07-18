@@ -1,7 +1,7 @@
 package com.example.scheduledemo.service.dto;
 
-import com.example.scheduledemo.feignclients.DeptBaseResponseDTO;
-import com.example.scheduledemo.feignclients.EmployeeInfoDTO;
+import com.dingtalk.api.response.OapiV2DepartmentListsubResponse;
+import com.example.scheduledemo.feignclients.EmployeeResponseDTO;
 import com.example.scheduledemo.repository.entity.*;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
@@ -12,17 +12,17 @@ public interface DTOMapper {
     DTOMapper INSTANCE = Mappers.getMapper(DTOMapper.class);
 
 
-    default DepartmentEntity toEntity(DeptBaseResponseDTO dto) {
+    default DepartmentEntity toEntity(OapiV2DepartmentListsubResponse.DeptBaseResponse dto) {
         DepartmentEntity departmentEntity = new DepartmentEntity();
 
         departmentEntity.setName(dto.getName());
-        departmentEntity.setDingTalkDepartmentId(dto.getDepartmentId());
+        departmentEntity.setDingTalkDepartmentId(dto.getDeptId());
         departmentEntity.setDingTalkParentId(dto.getParentId());
 
         return departmentEntity;
     }
 
-    default EmployeeEntity toEntity(EmployeeInfoDTO dto) {
+    default EmployeeEntity toEntity(EmployeeResponseDTO.EmployeeInfoDTO  dto) {
         EmployeeEntity employeeEntity = new EmployeeEntity();
         employeeEntity.setName(dto.getName());
         employeeEntity.setEmail(dto.getEmail());

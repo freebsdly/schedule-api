@@ -60,6 +60,14 @@ public class Config {
     }
 
     @Bean
+    public com.aliyun.dingtalkrobot_1_0.Client robotClient() throws Exception {
+        com.aliyun.teaopenapi.models.Config config = new com.aliyun.teaopenapi.models.Config();
+        config.protocol = "https";
+        config.regionId = "central";
+        return new com.aliyun.dingtalkrobot_1_0.Client(config);
+    }
+
+    @Bean
     public ToolCallbackProvider mcpTools(ToolService service) {
         return MethodToolCallbackProvider.builder().toolObjects(service).build();
     }

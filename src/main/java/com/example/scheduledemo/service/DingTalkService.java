@@ -7,19 +7,23 @@ import com.aliyun.dingtalkconference_1_0.models.*;
 import com.aliyun.dingtalkdoc_1_0.models.*;
 import com.aliyun.dingtalkoauth2_1_0.models.GetAccessTokenRequest;
 import com.aliyun.dingtalkoauth2_1_0.models.GetAccessTokenResponse;
+import com.aliyun.dingtalkrobot_1_0.models.BatchSendOTOHeaders;
+import com.aliyun.dingtalkrobot_1_0.models.BatchSendOTORequest;
 import com.aliyun.teautil.models.RuntimeOptions;
-import com.example.scheduledemo.repository.entity.DepartmentEntity;
-import com.example.scheduledemo.repository.entity.EmployeeEntity;
-import com.example.scheduledemo.feignclients.DepartmentResponseDTO;
+import com.dingtalk.api.DefaultDingTalkClient;
+import com.dingtalk.api.request.OapiV2DepartmentListsubRequest;
+import com.dingtalk.api.response.OapiV2DepartmentListsubResponse;
 import com.example.scheduledemo.feignclients.DingTalkFeignClient;
 import com.example.scheduledemo.feignclients.EmployeeQuery;
 import com.example.scheduledemo.feignclients.EmployeeResponseDTO;
 import com.example.scheduledemo.repository.DepartmentRepository;
 import com.example.scheduledemo.repository.EmployeeRepository;
+import com.example.scheduledemo.repository.entity.DepartmentEntity;
+import com.example.scheduledemo.repository.entity.EmployeeEntity;
 import com.example.scheduledemo.service.dto.CreateDocDTO;
 import com.example.scheduledemo.service.dto.CreateDocResultDTO;
-import com.example.scheduledemo.service.dto.RecordTextResultDTO;
 import com.example.scheduledemo.service.dto.DTOMapper;
+import com.example.scheduledemo.service.dto.RecordTextResultDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,6 +53,9 @@ public class DingTalkService {
     private com.aliyun.dingtalkdoc_1_0.Client docClient;
 
     @Autowired
+    private com.aliyun.dingtalkrobot_1_0.Client robotClient;
+
+    @Autowired
     private DepartmentRepository departmentRepository;
 
     @Autowired
@@ -59,6 +66,9 @@ public class DingTalkService {
 
     @Value("${dingtalk.sk}")
     private String appSecret;
+
+    @Value("${dingtalk.robot.code}")
+    private String robotCode;
 
     @Value("${dingtalk.connector.base-url}")
     private String dingTalkConnectorBaseUrl;
@@ -108,20 +118,15 @@ public class DingTalkService {
 
         while (!departmentStack.isEmpty()) {
             Long currentId = departmentStack.pop();
-            String token = getAccessToken();
-            DepartmentResponseDTO info = dingTalkFeignClient.getSubDepartments(token, currentId);
-            if (info.getErrorCode() != 0) {
-                log.error("get department info return error: {}", info.getErrorMessage());
-                break;
-            }
+            List<OapiV2DepartmentListsubResponse.DeptBaseResponse> subDepartments = getSubDepartments(currentId);
 
-            info.getResult().forEach(e -> {
-                Optional<DepartmentEntity> exist = departmentRepository.findByDingTalkDepartmentId(e.getDepartmentId());
+            subDepartments.forEach(e -> {
+                Optional<DepartmentEntity> exist = departmentRepository.findByDingTalkDepartmentId(e.getDeptId());
                 if (exist.isPresent()) {
                     DepartmentEntity entity = exist.get();
                     entity.setName(e.getName());
                     entity.setDingTalkParentId(e.getParentId());
-                    entity.setDingTalkDepartmentId(e.getDepartmentId());
+                    entity.setDingTalkDepartmentId(e.getDeptId());
                     departmentRepository.save(entity);
                 } else {
                     log.debug("department (id=1) does not exist, create it");
@@ -129,7 +134,7 @@ public class DingTalkService {
                     departmentRepository.saveAndFlush(entity);
                 }
 
-                departmentStack.push(e.getDepartmentId());
+                departmentStack.push(e.getDeptId());
             });
         }
         syncDepartmentRunning = false;
@@ -309,5 +314,29 @@ public class DingTalkService {
 
         String url = docInfo.getBody().getUrl();
         return new CreateDocResultDTO(url, error);
+    }
+
+    public void robotBatchSendMessage(List<String> userIds, String msgKey, String message) throws Exception {
+        String token = getAccessToken();
+        BatchSendOTOHeaders headers = new BatchSendOTOHeaders();
+        headers.setXAcsDingtalkAccessToken(token);
+        BatchSendOTORequest request = new BatchSendOTORequest();
+        request.setRobotCode(robotCode);
+        request.setUserIds(userIds);
+        request.setMsgKey(msgKey);
+        request.setMsgParam(message);
+        RuntimeOptions runtimeOptions = new RuntimeOptions();
+        robotClient.batchSendOTOWithOptions(request, headers, runtimeOptions);
+    }
+
+    public List<OapiV2DepartmentListsubResponse.DeptBaseResponse> getSubDepartments(Long id) throws Exception {
+        DefaultDingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/topapi/v2/department/listsub");
+        OapiV2DepartmentListsubRequest req = new OapiV2DepartmentListsubRequest();
+        req.setDeptId(id);
+        OapiV2DepartmentListsubResponse resp = client.execute(req, "");
+        if (resp.getErrcode() != 0) {
+            throw new Exception(resp.getErrmsg());
+        }
+        return resp.getResult();
     }
 }
