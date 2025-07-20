@@ -12,5 +12,7 @@ public class IntentRecognitionDTO
 
     private String intent;
 
+    private String output;
+
     private ScheduleEventDTO slots;
 }

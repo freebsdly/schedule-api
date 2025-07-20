@@ -26,9 +26,10 @@ public class DingTalkApi implements DingTalkDoc
     @GetMapping(value = "/calendars/events/cloud-records/text")
     public APIResultVO<RecordTextResultDTO> getEventCloudRecordText(@ModelAttribute QueryTextVO vo) throws Exception
     {
-        RecordTextResultDTO info = dingTalkService.getEventCloudRecordAllText(vo.getUnionId(),
-                                                                              vo.getCalendarId(),
-                                                                              vo.getEventId());
+        RecordTextResultDTO info = dingTalkService.getEventCloudRecordAllText(
+                vo.getUnionId(),
+                vo.getCalendarId(),
+                vo.getEventId());
         return APIResultVO.success(info);
     }
 

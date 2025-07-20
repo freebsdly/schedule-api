@@ -518,30 +518,40 @@ public class DingTalkService
                 runtimeOptions);
     }
 
-    public void deleteCalendarEvent(String organizerUnionId, String calendarId, String eventId) throws Exception
+    public void deleteCalendarEvent(ScheduleEventDTO dto) throws Exception
     {
         DeleteEventHeaders headers = new DeleteEventHeaders().setXAcsDingtalkAccessToken(getAccessToken());
         DeleteEventRequest request = new DeleteEventRequest();
         RuntimeOptions runtimeOptions = new RuntimeOptions();
-        calendarClient.deleteEventWithOptions(organizerUnionId, calendarId, eventId, request, headers, runtimeOptions);
+        calendarClient.deleteEventWithOptions(
+                dto.getOrganizer().getUnionId(),
+                dto.getCalendarId(),
+                dto.getDingtalkEventId(),
+                request,
+                headers,
+                runtimeOptions);
     }
 
-    public void getCalendarEvents(
-            String organizerUnionId, String calendarId, String startTime, String endTime, String nextToken
-                                 ) throws Exception
+    public ListEventsViewResponseBody getCalendarEvents(ScheduleEventDTO dto, String nextToken) throws Exception
     {
         ListEventsViewHeaders headers = new ListEventsViewHeaders().setXAcsDingtalkAccessToken(getAccessToken());
         ListEventsViewRequest request = new ListEventsViewRequest()
                 .setNextToken(nextToken)
-                .setTimeMin(startTime)
-                .setTimeMax(endTime);
+                .setTimeMin(dto.getStartTime().toString())
+                .setTimeMax(dto.getEndTime().toString());
 
         RuntimeOptions runtimeOptions = new RuntimeOptions();
         ListEventsViewResponse response = calendarClient.listEventsViewWithOptions(
-                organizerUnionId,
-                calendarId,
+                dto.getOrganizer().getUnionId(),
+                dto.getCalendarId(),
                 request,
                 headers,
                 runtimeOptions);
+
+        if (response.getStatusCode() != 200) {
+            throw new RuntimeException("get calendar events failed.");
+        }
+
+        return response.getBody();
     }
 }
