@@ -37,13 +37,13 @@ public class AIService
     @Value("${spring.application.name}")
     private String appName;
 
-    @Value("${deepseek.base-url}")
+    @Value("${openai.compatible.base-url}")
     private String openAICompatibleBaseUrl;
 
-    @Value("${deepseek.chat-url}")
+    @Value("${openai.compatible.chat-url}")
     private String openAICompatibleChatUrl;
 
-    @Value("${deepseek.api-key}")
+    @Value("${openai.compatible.api-key}")
     private String openAICompatibleAppKey;
 
     private final WebClient webClient = WebClient.create();
@@ -127,34 +127,21 @@ public class AIService
                 6. 返回内哦让那个应清晰、精确、易于理解，在保持质量的同时，尽可能简洁，不要输出多余解释
 
                 ## 典型任务1
-                输入"请安排明天上午9点的会议在236会议室讨论项目进展及问题，x总和各项目负责人都参会"，输出如下：
-                意图=创建日程
-                会议主题=讨论项目进展及问题
-                开始时间=2023-05-10 09:00:00
-                结束时间=2023-05-10 10:00:00
-                会议地点=236会议室
-                会议参与人员=x总、y总、z
+                输入"请安排明天上午9点的会议在236会议室讨论项目进展及问题，x总和各项目负责人都参会"，输出json如下：
+                {"indent":"创建日程","summary":"讨论项目进展及问题","start_time":"2023-05-10 09:00:00","end_time":"2023-05-10 10:00:00","location":"236会议室","attendees":["x总","y总"]}
+                
                 ## 典型任务2
-                输入"明天上午9点的会议推迟1小时"，输出如下：
-                意图=修改日程
-                会议主题=讨论项目进展及问题
-                开始时间=2023-05-10 09:00:00
-                结束时间=2023-05-10 10:00:00
-                会议地点=236会议室
-                会议参与人员=x总、y总、z
+                输入"明天上午9点的会议推迟1小时"，输出json如下：
+                {"indent":"修改日程","summary":"讨论项目进展及问题","start_time":"2023-05-10 09:00:00","end_time":"2023-05-10 10:00:00","location":"236会议室","attendees":["x总","y总"]}
+                
                 ## 典型任务3
-                输入"取消明天上午9点的会议"，输出如下：
-                意图=取消日程
-                会议主题=讨论项目进展及问题
-                开始时间=2023-05-10 09:00:00
-                结束时间=2023-05-10 10:00:00
-                会议地点=236会议室
-                会议参与人员=x总、y总、z
+                输入"取消明天上午9点的会议"，输出json如下：
+                {"indent":"取消日程","summary":"讨论项目进展及问题","start_time":"2023-05-10 09:00:00","end_time":"2023-05-10 10:00:00","location":"236会议室","attendees":["x总","y总"]}
+                
                 ## 典型任务4
-                输入"明天的日程"，输出如下：
-                意图=查询日程
-                开始时间=2023-05-10 00:00:00
-                结束时间=2023-05-11 00:00:00""";
+                输入"明天的日程"，输出json如下：
+                {"indent":"查询日程","start_time":"2023-05-10 09:00:00","end_time":"2023-05-10 10:00:00"}
+                """;
         String user_prompt = """
                 今天是%s，%s
                 """;
@@ -170,6 +157,7 @@ public class AIService
                 Map.of("role", "user", "content", user_prompt)
                                     ));
         body.put("stream", true);
+        body.put("response_format", Map.of("type", "json_object"));
 
         return webClient.post()
                 .uri(openAICompatibleChatUrl)
@@ -206,33 +194,20 @@ public class AIService
 
                 ## 典型任务1
                 输入"请安排明天上午9点的会议在236会议室讨论项目进展及问题，x总和各项目负责人都参会"，输出如下：
-                意图=创建日程
-                会议主题=讨论项目进展及问题
-                开始时间=2023-05-10 09:00:00
-                结束时间=2023-05-10 10:00:00
-                会议地点=236会议室
-                会议参与人员=x总、y总、z
+                {"indent":"创建日程","summary":"讨论项目进展及问题","start_time":"2023-05-10 09:00:00","end_time":"2023-05-10 10:00:00","location":"236会议室","attendees":["x总","y总"]}
+                
                 ## 典型任务2
                 输入"明天上午9点的会议推迟1小时"，输出如下：
-                意图=修改日程
-                会议主题=讨论项目进展及问题
-                开始时间=2023-05-10 09:00:00
-                结束时间=2023-05-10 10:00:00
-                会议地点=236会议室
-                会议参与人员=x总、y总、z
+                {"indent":"修改日程","summary":"讨论项目进展及问题","start_time":"2023-05-10 09:00:00","end_time":"2023-05-10 10:00:00","location":"236会议室","attendees":["x总","y总"]}
+                
                 ## 典型任务3
                 输入"取消明天上午9点的会议"，输出如下：
-                意图=取消日程
-                会议主题=讨论项目进展及问题
-                开始时间=2023-05-10 09:00:00
-                结束时间=2023-05-10 10:00:00
-                会议地点=236会议室
-                会议参与人员=x总、y总、z
+                {"indent":"取消日程","summary":"讨论项目进展及问题","start_time":"2023-05-10 09:00:00","end_time":"2023-05-10 10:00:00","location":"236会议室","attendees":["x总","y总"]}
+                
                 ## 典型任务4
                 输入"明天的日程"，输出如下：
-                意图=查询日程
-                开始时间=2023-05-10 00:00:00
-                结束时间=2023-05-11 00:00:00""";
+                {"indent":"查询日程","start_time":"2023-05-10 09:00:00","end_time":"2023-05-10 10:00:00"}
+                """;
         String user_prompt = """
                 今天是%s，%s
                 """;

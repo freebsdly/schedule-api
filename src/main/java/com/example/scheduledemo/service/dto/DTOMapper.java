@@ -7,14 +7,12 @@ import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface DTOMapper
-{
+public interface DTOMapper {
 
     DTOMapper INSTANCE = Mappers.getMapper(DTOMapper.class);
 
 
-    default DepartmentEntity toEntity(OapiV2DepartmentListsubResponse.DeptBaseResponse dto)
-    {
+    default DepartmentEntity toEntity(OapiV2DepartmentListsubResponse.DeptBaseResponse dto) {
         DepartmentEntity departmentEntity = new DepartmentEntity();
 
         departmentEntity.setName(dto.getName());
@@ -24,8 +22,7 @@ public interface DTOMapper
         return departmentEntity;
     }
 
-    default EmployeeEntity toEntity(EmployeeResponseDTO.EmployeeInfoDTO dto)
-    {
+    default EmployeeEntity toEntity(EmployeeResponseDTO.EmployeeInfoDTO dto) {
         EmployeeEntity employeeEntity = new EmployeeEntity();
         employeeEntity.setName(dto.getName());
         employeeEntity.setEmail(dto.getEmail());
@@ -78,8 +75,7 @@ public interface DTOMapper
                                        @MappingTarget MeetingMinutesEntity meetingMinutesEntity);
 
     @AfterMapping
-    default void linkActionItems(@MappingTarget MeetingMinutesEntity meetingMinutesEntity)
-    {
+    default void linkActionItems(@MappingTarget MeetingMinutesEntity meetingMinutesEntity) {
         meetingMinutesEntity.getActionItems().forEach(actionItem -> actionItem.setMeetingMinute(meetingMinutesEntity));
     }
 
@@ -91,4 +87,11 @@ public interface DTOMapper
     ActionItemEntity partialUpdate(ActionItemDTO actionItemDto, @MappingTarget ActionItemEntity actionItemEntity);
 
 
+    ScheduleEventDTO toDTO(IntentRecognitionDTO dto);
+
+    default EventAttendeeDTO toDTO(String value) {
+        EventAttendeeDTO dto = new EventAttendeeDTO();
+        dto.setEmployeeName(value);
+        return dto;
+    }
 }
