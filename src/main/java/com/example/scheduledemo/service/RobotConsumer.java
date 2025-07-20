@@ -101,8 +101,7 @@ public class RobotConsumer implements OpenDingTalkCallbackListener<ChatbotMessag
             case "audio" -> {
                 String downloadCode = message.getContent().getDownloadCode();
                 String url = dingTalkService.getAudioMessageDownloadUrl(downloadCode);
-                // TODO: Audio file to text
-                yield "明日日程";
+                yield speechToText(url);
             }
             default -> {
                 throw new BusinessException("unsupported message type.");
@@ -129,5 +128,9 @@ public class RobotConsumer implements OpenDingTalkCallbackListener<ChatbotMessag
      */
     private IntentRecognitionDTO userIntentRecognition(String ask) {
         return new IntentRecognitionDTO();
+    }
+
+    private String speechToText(String url) {
+        return "明日日程";
     }
 }

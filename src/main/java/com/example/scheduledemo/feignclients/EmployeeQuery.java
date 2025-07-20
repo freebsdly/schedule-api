@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class EmployeeQuery {
+public class EmployeeQuery
+{
 
     @JsonProperty("dept_id")
     Long departmentId;

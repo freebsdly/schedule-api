@@ -10,7 +10,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springdoc.core.annotations.ParameterObject;
 
 @Tag(name = "DingTalk API")
-public interface DingTalkDoc {
+public interface DingTalkDoc
+{
 
     @Operation(summary = "Get Event Cloud Record Text", description = "获取日程录制音频转文字")
     APIResultVO<RecordTextResultDTO> getEventCloudRecordText(@ParameterObject QueryTextVO vo) throws Exception;

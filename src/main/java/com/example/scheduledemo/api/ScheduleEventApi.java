@@ -13,7 +13,8 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/schedule-events")
-public class ScheduleEventApi implements ScheduleEventDoc {
+public class ScheduleEventApi implements ScheduleEventDoc
+{
 
     @Autowired
     private DingTalkService dingTalkService;
@@ -23,20 +24,24 @@ public class ScheduleEventApi implements ScheduleEventDoc {
 
     @Override
     @PostMapping(value = "/push-data")
-    public APIResultVO<String> pushEventDataToTable(@RequestParam String nodeId, @RequestBody String content) throws Exception {
+    public APIResultVO<String> pushEventDataToTable(@RequestParam String nodeId, @RequestBody String content)
+            throws Exception
+    {
         String result = dingTalkService.pushEventToMultiDimensionalTable(nodeId, content);
         return APIResultVO.success(result);
     }
 
     @Override
     @PostMapping(value = "/generate")
-    public APIResultVO<String> generateEventMeetingMinutes(@RequestParam String eventId) throws Exception {
+    public APIResultVO<String> generateEventMeetingMinutes(@RequestParam String eventId) throws Exception
+    {
         String s = scheduleEventService.generateEventMeetingMinutes(eventId);
         return APIResultVO.success(s);
     }
 
     @Override
-    public APIResultVO<List<ScheduleEventDTO>> getScheduleEvent() {
+    public APIResultVO<List<ScheduleEventDTO>> getScheduleEvent()
+    {
         List<ScheduleEventDTO> scheduleEvents = scheduleEventService.getScheduleEvents();
         return APIResultVO.success(scheduleEvents);
     }

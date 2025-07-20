@@ -10,7 +10,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PushDataDTO {
+public class PushDataDTO
+{
     private String id;
     private String action;
     private String summary;

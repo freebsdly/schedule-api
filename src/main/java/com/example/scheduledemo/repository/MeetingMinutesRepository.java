@@ -6,5 +6,7 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MeetingMinutesRepository extends JpaRepository<MeetingMinutesEntity, Long>, QuerydslPredicateExecutor<MeetingMinutesEntity> {
+public interface MeetingMinutesRepository
+        extends JpaRepository<MeetingMinutesEntity, Long>, QuerydslPredicateExecutor<MeetingMinutesEntity>
+{
 }

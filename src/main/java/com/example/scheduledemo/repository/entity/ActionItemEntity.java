@@ -14,7 +14,8 @@ import java.time.LocalDateTime;
 @Table(name = "action_items")
 @Getter
 @Setter
-public class ActionItemEntity {
+public class ActionItemEntity
+{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -1,6 +1,8 @@
 package com.example.scheduledemo.service;
 
-import com.example.scheduledemo.service.dto.*;
+import com.example.scheduledemo.service.dto.DifyBlockResponseDTO;
+import com.example.scheduledemo.service.dto.DifyRequestBodyDTO;
+import com.example.scheduledemo.service.dto.DifySSEResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -10,7 +12,8 @@ import java.util.HashMap;
 
 @Service
 @Slf4j
-public class AIService {
+public class AIService
+{
 
     @Value("${dify.base-url}")
     private String difyApiUrl;
@@ -36,7 +39,8 @@ public class AIService {
      * @return
      * @throws Exception
      */
-    public DifyBlockResponseDTO getMeetingMinutes(String content) throws Exception {
+    public DifyBlockResponseDTO getMeetingMinutes(String content) throws Exception
+    {
         DifyRequestBodyDTO body = DifyRequestBodyDTO.builder()
                 .user(appName)
                 .query(content)
@@ -56,7 +60,8 @@ public class AIService {
         return result;
     }
 
-    public void getMeetingMinutesStreaming(String content) {
+    public void getMeetingMinutesStreaming(String content)
+    {
         DifyRequestBodyDTO body = DifyRequestBodyDTO.builder()
                 .user(appName)
                 .query(content)

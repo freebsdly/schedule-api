@@ -10,7 +10,8 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class ToolService {
+public class ToolService
+{
 
     @Autowired
     private DingTalkService dingTalkService;
@@ -26,7 +27,8 @@ public class ToolService {
             @ToolParam(description = "calendarId")
             String calendarId,
             @ToolParam(description = "event id")
-            String eventId) throws Exception {
+            String eventId) throws Exception
+    {
         RecordTextResultDTO info = dingTalkService.getEventCloudRecordAllText(unionId, calendarId, eventId);
         DifyBlockResponseDTO result = aiService.getMeetingMinutes(info.getText());
         return result.getAnswer();

@@ -11,7 +11,8 @@ import java.util.List;
  * DTO for {@link com.example.scheduledemo.repository.entity.ScheduleEventEntity}
  */
 @Data
-public class ScheduleEventDTO implements Serializable {
+public class ScheduleEventDTO implements Serializable
+{
 
     Long id;
     String dingtalkEventId;

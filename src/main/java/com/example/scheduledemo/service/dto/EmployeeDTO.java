@@ -8,7 +8,8 @@ import java.io.Serializable;
  * DTO for {@link com.example.scheduledemo.repository.entity.EmployeeEntity}
  */
 @Data
-public class EmployeeDTO implements Serializable {
+public class EmployeeDTO implements Serializable
+{
     Long id;
     String name;
     String email;

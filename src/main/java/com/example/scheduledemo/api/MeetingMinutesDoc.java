@@ -1,15 +1,17 @@
 package com.example.scheduledemo.api;
 
-import com.example.scheduledemo.api.vo.*;
-import com.example.scheduledemo.service.dto.CreateDocDTO;
+import com.example.scheduledemo.api.vo.APIResultVO;
+import com.example.scheduledemo.api.vo.MeetingMinutesAddVO;
+import com.example.scheduledemo.api.vo.MeetingMinutesUpdateVO;
+import com.example.scheduledemo.api.vo.MeetingMinutesVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springdoc.core.annotations.ParameterObject;
 
 import java.util.List;
 
 @Tag(name = "Meeting Minutes API")
-public interface MeetingMinutesDoc {
+public interface MeetingMinutesDoc
+{
 
     @Operation(summary = "Query meeting minutes")
     APIResultVO<List<MeetingMinutesVO>> getMeetingMinutes();

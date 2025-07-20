@@ -12,7 +12,8 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "event_attendees")
-public class EventAttendeeEntity {
+public class EventAttendeeEntity
+{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

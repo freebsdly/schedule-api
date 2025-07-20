@@ -8,7 +8,9 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface EmployeeRepository extends JpaRepository<EmployeeEntity, Long>, QuerydslPredicateExecutor<EmployeeEntity> {
+public interface EmployeeRepository
+        extends JpaRepository<EmployeeEntity, Long>, QuerydslPredicateExecutor<EmployeeEntity>
+{
 
     Optional<EmployeeEntity> findByUnionId(String unionId);
 }

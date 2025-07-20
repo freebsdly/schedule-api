@@ -12,7 +12,8 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "employees")
-public class EmployeeEntity {
+public class EmployeeEntity
+{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

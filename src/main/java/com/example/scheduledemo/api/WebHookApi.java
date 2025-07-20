@@ -15,13 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/webhook")
 @Slf4j
-public class WebHookApi implements WebHookDoc {
+public class WebHookApi implements WebHookDoc
+{
 
     @Autowired
     private ScheduleEventService scheduleEventService;
 
     @PostMapping(value = "")
-    public APIResultVO<Object> operateScheduleEvent(@RequestBody OperateEventVO vo) throws Exception {
+    public APIResultVO<Object> operateScheduleEvent(@RequestBody OperateEventVO vo) throws Exception
+    {
         log.debug("operate event: {}", vo);
         ScheduleEventDTO dto = VOMapper.INSTANCE.toDTO(vo);
         if ("".equals(vo.getId()) || vo.getId() == null) {

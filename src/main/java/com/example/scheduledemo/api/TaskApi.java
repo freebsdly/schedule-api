@@ -9,21 +9,24 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/tasks")
-public class TaskApi implements TaskDoc {
+public class TaskApi implements TaskDoc
+{
 
     @Autowired
     private DingTalkService dingTalkService;
 
     @Override
     @GetMapping(value = "/sync/departments")
-    public APIResultVO<Void> syncDepartments() throws Exception {
+    public APIResultVO<Void> syncDepartments() throws Exception
+    {
         dingTalkService.syncDepartments();
         return APIResultVO.success(null);
     }
 
     @Override
     @GetMapping(value = "/sync/employees")
-    public APIResultVO<Void> syncEmployees() throws Exception {
+    public APIResultVO<Void> syncEmployees() throws Exception
+    {
         dingTalkService.syncEmployees();
         return APIResultVO.success(null);
     }

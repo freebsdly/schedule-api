@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class IntentRecognitionDTO {
+public class IntentRecognitionDTO
+{
 
     private String intent;
 

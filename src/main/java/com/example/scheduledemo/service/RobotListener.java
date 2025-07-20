@@ -10,7 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RobotListener {
+public class RobotListener
+{
 
     @Autowired
     private RobotConsumer robotConsumer;
@@ -22,7 +23,8 @@ public class RobotListener {
     private String appSecret;
 
     @PostConstruct
-    public void init() throws Exception {
+    public void init() throws Exception
+    {
         // init stream client
         OpenDingTalkClient client = OpenDingTalkStreamClientBuilder.custom()
                 .credential(new AuthClientCredential(appKey, appSecret))

@@ -12,7 +12,8 @@ import lombok.Setter;
 @Table(name = "departments")
 @AllArgsConstructor
 @NoArgsConstructor
-public class DepartmentEntity {
+public class DepartmentEntity
+{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

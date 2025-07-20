@@ -9,7 +9,8 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DifyBlockResponseDTO {
+public class DifyBlockResponseDTO
+{
     private String event;
     private UUID taskID;
     private UUID id;

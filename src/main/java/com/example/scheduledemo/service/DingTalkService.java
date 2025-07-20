@@ -7,9 +7,6 @@ import com.aliyun.dingtalkim_1_0.models.*;
 import com.aliyun.dingtalkoauth2_1_0.models.GetAccessTokenRequest;
 import com.aliyun.dingtalkoauth2_1_0.models.GetAccessTokenResponse;
 import com.aliyun.dingtalkrobot_1_0.models.*;
-import com.aliyun.tea.TeaConverter;
-import com.aliyun.tea.TeaException;
-import com.aliyun.tea.TeaPair;
 import com.aliyun.teautil.models.RuntimeOptions;
 import com.dingtalk.api.DefaultDingTalkClient;
 import com.dingtalk.api.request.OapiV2DepartmentListsubRequest;
@@ -30,11 +27,15 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
-public class DingTalkService {
+public class DingTalkService
+{
 
     @Autowired
     private com.aliyun.dingtalkcalendar_1_0.Client calendarClient;
@@ -81,13 +82,13 @@ public class DingTalkService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    public String getAccessToken() throws Exception {
+    public String getAccessToken() throws Exception
+    {
         if (accessToken != null) {
             return accessToken;
         }
-        GetAccessTokenRequest getAccessTokenRequest = new GetAccessTokenRequest()
-                .setAppKey(appKey)
-                .setAppSecret(appSecret);
+        GetAccessTokenRequest getAccessTokenRequest = new GetAccessTokenRequest().setAppKey(appKey).setAppSecret(
+                appSecret);
         GetAccessTokenResponse resp = oauth2Client.getAccessToken(getAccessTokenRequest);
         accessToken = resp.getBody().getAccessToken();
         return accessToken;
@@ -96,12 +97,14 @@ public class DingTalkService {
     /**
      * FIXME: 按照token的过期时间刷新token
      */
-    void updateAccessToken() {
+    void updateAccessToken()
+    {
 
     }
 
     @Async
-    public synchronized void syncDepartments() throws Exception {
+    public synchronized void syncDepartments() throws Exception
+    {
         if (syncDepartmentRunning) {
             throw new Exception("sync department task already running");
         }
@@ -141,7 +144,8 @@ public class DingTalkService {
     }
 
     @Async
-    public synchronized void syncEmployees() throws Exception {
+    public synchronized void syncEmployees() throws Exception
+    {
         if (syncEmployeeRunning) {
             throw new Exception("sync department task already running");
         }
@@ -153,7 +157,11 @@ public class DingTalkService {
             while (haveNext) {
                 EmployeeResponseDTO dto = dingTalkFeignClient.getDepartmentEmployees(token, query);
                 if (dto.getErrorCode() != 0) {
-                    log.error("get department (id:{}) employee error: {}", e.getDingTalkDepartmentId(), dto.getErrorMessage());
+                    log.error(
+                            "get department (id:{}) employee error: {}",
+                            e.getDingTalkDepartmentId(),
+                            dto.getErrorMessage()
+                             );
                     return;
                 }
                 dto.getResult().getEmployees().forEach(employee -> {
@@ -180,7 +188,9 @@ public class DingTalkService {
         syncDepartmentRunning = false;
     }
 
-    public QueryCloudRecordTextResponseBody getCloudRecordText(String unionId, String conferenceId, Long nextToken) throws Exception {
+    public QueryCloudRecordTextResponseBody getCloudRecordText(String unionId, String conferenceId, Long nextToken)
+            throws Exception
+    {
         String token = getAccessToken();
         QueryCloudRecordTextHeaders headers = new QueryCloudRecordTextHeaders();
         headers.setXAcsDingtalkAccessToken(token);
@@ -188,7 +198,11 @@ public class DingTalkService {
         request.setUnionId(unionId);
         request.setNextToken(nextToken);
         RuntimeOptions runtimeOptions = new RuntimeOptions();
-        QueryCloudRecordTextResponse resp = conferenceClient.queryCloudRecordTextWithOptions(conferenceId, request, headers, runtimeOptions);
+        QueryCloudRecordTextResponse resp = conferenceClient.queryCloudRecordTextWithOptions(
+                conferenceId,
+                request,
+                headers,
+                runtimeOptions);
         if (resp.getStatusCode() != 200) {
             log.error("get cloud record text failed. code: {}", resp.getStatusCode());
             throw new Exception("Failed to get cloud record text info.");
@@ -196,11 +210,13 @@ public class DingTalkService {
         return resp.getBody();
     }
 
-    public String getCloudRecordAllText(String unionId, String conferenceId) throws Exception {
+    public String getCloudRecordAllText(String unionId, String conferenceId) throws Exception
+    {
         QueryCloudRecordTextResponseBody body = getCloudRecordText(unionId, conferenceId, null);
 
         //FIXME: 考虑hasMore情况
-        List<String> list = body.getParagraphList().stream()
+        List<String> list = body.getParagraphList()
+                .stream()
                 .map(QueryCloudRecordTextResponseBody.QueryCloudRecordTextResponseBodyParagraphList::getParagraph)
                 .toList();
 
@@ -214,22 +230,31 @@ public class DingTalkService {
      * @return
      * @throws Exception
      */
-    public String filterConferenceIdsByRecordStatus(List<String> ids) throws Exception {
+    public String filterConferenceIdsByRecordStatus(List<String> ids) throws Exception
+    {
         if (!ids.isEmpty()) {
             return ids.get(0);
         }
         throw new Exception("event have more than 1 conference id");
     }
 
-    public RecordTextResultDTO getEventCloudRecordAllText(String unionId, String calendarId, String eventId) throws Exception {
+    public RecordTextResultDTO getEventCloudRecordAllText(String unionId, String calendarId, String eventId)
+            throws Exception
+    {
         String token = getAccessToken();
         RuntimeOptions runtimeOptions = new RuntimeOptions();
 
         GetEventHeaders getEventHeaders = new GetEventHeaders();
         getEventHeaders.setXAcsDingtalkAccessToken(token);
-        GetEventRequest getEventRequest = new GetEventRequest()
-                .setMaxAttendees(100L);
-        GetEventResponse eventInfo = calendarClient.getEventWithOptions(unionId, calendarId, eventId, getEventRequest, getEventHeaders, runtimeOptions);
+        GetEventRequest getEventRequest = new GetEventRequest().setMaxAttendees(100L);
+        GetEventResponse eventInfo = calendarClient.getEventWithOptions(
+                unionId,
+                calendarId,
+                eventId,
+                getEventRequest,
+                getEventHeaders,
+                runtimeOptions
+                                                                       );
         if (eventInfo.getStatusCode() != 200) {
             log.error("Get Event Info error: {}", eventInfo.getStatusCode());
             throw new Exception("Get Event Info error");
@@ -244,7 +269,11 @@ public class DingTalkService {
         QueryConferenceInfoByRoomCodeHeaders headers = new QueryConferenceInfoByRoomCodeHeaders();
         headers.setXAcsDingtalkAccessToken(token);
         QueryConferenceInfoByRoomCodeRequest request = new QueryConferenceInfoByRoomCodeRequest();
-        QueryConferenceInfoByRoomCodeResponse resp = conferenceClient.queryConferenceInfoByRoomCodeWithOptions(replace, request, headers, runtimeOptions);
+        QueryConferenceInfoByRoomCodeResponse resp = conferenceClient.queryConferenceInfoByRoomCodeWithOptions(
+                replace,
+                request,
+                headers,
+                runtimeOptions);
         if (resp.getStatusCode() != 200) {
             log.error("get conference id by meeting room failed. code: {}", resp.getStatusCode());
             throw new Exception("Failed to get conference id by meeting room.");
@@ -259,7 +288,8 @@ public class DingTalkService {
     }
 
 
-    public String pushEventToMultiDimensionalTable(String nodeId, String content) throws Exception {
+    public String pushEventToMultiDimensionalTable(String nodeId, String content) throws Exception
+    {
         String url = String.format("%s/%s", dingTalkConnectorBaseUrl, nodeId);
         WebClient webClient = WebClient.create();
         String result = webClient.post()
@@ -279,7 +309,8 @@ public class DingTalkService {
      * @throws Exception
      * @url https://open.dingtalk.com/document/orgapp/create-team-space-document
      */
-    public CreateDocResultDTO createKBDoc(CreateDocDTO dto) throws Exception {
+    public CreateDocResultDTO createKBDoc(CreateDocDTO dto) throws Exception
+    {
         String token = getAccessToken();
         CreateWorkspaceDocHeaders headers = new CreateWorkspaceDocHeaders();
         headers.setXAcsDingtalkAccessToken(token);
@@ -289,7 +320,11 @@ public class DingTalkService {
                 .setOperatorId(dto.getUnionId())
                 .setParentNodeId(dto.getParentId());
         RuntimeOptions runtimeOptions = new RuntimeOptions();
-        CreateWorkspaceDocResponse docInfo = docClient.createWorkspaceDocWithOptions(dto.getWorkspaceId(), request, headers, runtimeOptions);
+        CreateWorkspaceDocResponse docInfo = docClient.createWorkspaceDocWithOptions(
+                dto.getWorkspaceId(),
+                request,
+                headers,
+                runtimeOptions);
         if (docInfo.getStatusCode() != 200) {
             log.error("create workspace doc failed. statusCode: {}", docInfo.getStatusCode());
             throw new Exception("create workspace doc failed.");
@@ -304,7 +339,11 @@ public class DingTalkService {
         updateRequest.setOperatorId(dto.getUnionId());
         updateRequest.setDataType(dto.getContentType());
 
-        DocUpdateContentResponse result = docClient.docUpdateContentWithOptions(docKey, updateRequest, updateHeaders, runtimeOptions);
+        DocUpdateContentResponse result = docClient.docUpdateContentWithOptions(
+                docKey,
+                updateRequest,
+                updateHeaders,
+                runtimeOptions);
 
         String error = null;
         if (result.getStatusCode() != 200) {
@@ -316,7 +355,8 @@ public class DingTalkService {
         return new CreateDocResultDTO(url, error);
     }
 
-    public void robotBatchSendMessage(List<String> userIds, String msgKey, String message) throws Exception {
+    public void robotBatchSendMessage(List<String> userIds, String msgKey, String message) throws Exception
+    {
         String token = getAccessToken();
         BatchSendOTOHeaders headers = new BatchSendOTOHeaders();
         headers.setXAcsDingtalkAccessToken(token);
@@ -329,8 +369,10 @@ public class DingTalkService {
         robotClient.batchSendOTOWithOptions(request, headers, runtimeOptions);
     }
 
-    public List<OapiV2DepartmentListsubResponse.DeptBaseResponse> getSubDepartments(Long id) throws Exception {
-        DefaultDingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/topapi/v2/department/listsub");
+    public List<OapiV2DepartmentListsubResponse.DeptBaseResponse> getSubDepartments(Long id) throws Exception
+    {
+        DefaultDingTalkClient client = new DefaultDingTalkClient(
+                "https://oapi.dingtalk.com/topapi/v2/department/listsub");
         OapiV2DepartmentListsubRequest req = new OapiV2DepartmentListsubRequest();
         req.setDeptId(id);
         OapiV2DepartmentListsubResponse resp = client.execute(req, "");
@@ -340,33 +382,42 @@ public class DingTalkService {
         return resp.getResult();
     }
 
-    public void sendInteractiveCard(SendRobotInteractiveCardRequest request) throws Exception {
+    public void sendInteractiveCard(SendRobotInteractiveCardRequest request) throws Exception
+    {
         String token = getAccessToken();
         SendRobotInteractiveCardHeaders headers = new SendRobotInteractiveCardHeaders();
         headers.setXAcsDingtalkAccessToken(token);
         RuntimeOptions runtimeOptions = new RuntimeOptions();
 
-        SendRobotInteractiveCardResponse resp = imClient.sendRobotInteractiveCardWithOptions(request, headers, runtimeOptions);
+        SendRobotInteractiveCardResponse resp = imClient.sendRobotInteractiveCardWithOptions(
+                request,
+                headers,
+                runtimeOptions);
         if (resp.getStatusCode() != 200) {
             log.error("send interactive card failed. code: {}", resp.getStatusCode());
             throw new RuntimeException("send interactive card failed.");
         }
     }
 
-    public void updateInteractiveCard(UpdateRobotInteractiveCardRequest request) throws Exception {
+    public void updateInteractiveCard(UpdateRobotInteractiveCardRequest request) throws Exception
+    {
         String token = getAccessToken();
         UpdateRobotInteractiveCardHeaders headers = new UpdateRobotInteractiveCardHeaders();
         headers.setXAcsDingtalkAccessToken(token);
         RuntimeOptions runtimeOptions = new RuntimeOptions();
 
-        UpdateRobotInteractiveCardResponse resp = imClient.updateRobotInteractiveCardWithOptions(request, headers, runtimeOptions);
+        UpdateRobotInteractiveCardResponse resp = imClient.updateRobotInteractiveCardWithOptions(
+                request,
+                headers,
+                runtimeOptions);
         if (resp.getStatusCode() != 200) {
             log.error("update interactive card failed. code: {}", resp.getStatusCode());
             throw new RuntimeException("update interactive card failed.");
         }
     }
 
-    public String getAudioMessageDownloadUrl(String downloadCode) throws Exception {
+    public String getAudioMessageDownloadUrl(String downloadCode) throws Exception
+    {
         String token = getAccessToken();
         RobotMessageFileDownloadHeaders headers = new RobotMessageFileDownloadHeaders();
         headers.setXAcsDingtalkAccessToken(token);
@@ -374,7 +425,10 @@ public class DingTalkService {
                 .setDownloadCode(downloadCode)
                 .setRobotCode(appKey);
         RuntimeOptions runtimeOptions = new RuntimeOptions();
-        RobotMessageFileDownloadResponse resp = robotClient.robotMessageFileDownloadWithOptions(request, headers, runtimeOptions);
+        RobotMessageFileDownloadResponse resp = robotClient.robotMessageFileDownloadWithOptions(
+                request,
+                headers,
+                runtimeOptions);
         if (resp.getStatusCode() != 200) {
             log.error("download audio message file failed. code: {}", resp.getStatusCode());
             throw new RuntimeException("download audio message file failed.");
@@ -382,23 +436,27 @@ public class DingTalkService {
         return resp.getBody().getDownloadUrl();
     }
 
-    public void createCalendarEvent(ScheduleEventDTO dto) throws Exception {
-        CreateEventHeaders headers = new CreateEventHeaders()
-                .setXAcsDingtalkAccessToken(getAccessToken());
+    public void createCalendarEvent(ScheduleEventDTO dto) throws Exception
+    {
+        CreateEventHeaders headers = new CreateEventHeaders().setXAcsDingtalkAccessToken(getAccessToken());
         CreateEventRequest.CreateEventRequestOnlineMeetingInfo onlineMeetingInfo = new CreateEventRequest.CreateEventRequestOnlineMeetingInfo()
                 .setType("dingtalk");
-        CreateEventRequest.CreateEventRequestLocation location = new CreateEventRequest.CreateEventRequestLocation()
-                .setDisplayName(dto.getLocation());
-        CreateEventRequest.CreateEventRequestAttendees attendees0 = new CreateEventRequest.CreateEventRequestAttendees()
-                .setId("iiiP35sJxxx")
-                .setIsOptional(false);
+        CreateEventRequest.CreateEventRequestLocation location = new CreateEventRequest.CreateEventRequestLocation().setDisplayName(
+                dto.getLocation());
+
+        List<CreateEventRequest.CreateEventRequestAttendees> attendees = new java.util.ArrayList<>();
+        if (dto.getAttendees() != null) {
+            for (EventAttendeeDTO attendee : dto.getAttendees()) {
+                CreateEventRequest.CreateEventRequestAttendees attendee0 = new CreateEventRequest.CreateEventRequestAttendees()
+                        .setId(attendee.getEmployeeUnionId());
+                attendees.add(attendee0);
+            }
+        }
         CreateEventRequest.CreateEventRequestEnd end = new CreateEventRequest.CreateEventRequestEnd()
-                .setDate("2020-09-21")
-                .setDateTime("2021-09-20T10:15:30+08:00")
+                .setDateTime(dto.getEndTime().toString())
                 .setTimeZone("Asia/Shanghai");
         CreateEventRequest.CreateEventRequestStart start = new CreateEventRequest.CreateEventRequestStart()
-                .setDate("2021-09-20")
-                .setDateTime("2021-09-20T10:15:30+08:00")
+                .setDateTime(dto.getEndTime().toString())
                 .setTimeZone("Asia/Shanghai");
         CreateEventRequest createEventRequest = new CreateEventRequest()
                 .setSummary(dto.getSummary())
@@ -406,13 +464,84 @@ public class DingTalkService {
                 .setStart(start)
                 .setEnd(end)
                 .setIsAllDay(false)
-                .setAttendees(List.of(
-                        attendees0
-                ))
+                .setAttendees(attendees)
                 .setLocation(location)
                 .setOnlineMeetingInfo(onlineMeetingInfo);
 
         RuntimeOptions runtimeOptions = new RuntimeOptions();
-        calendarClient.createEventWithOptions(dto.getOrganizer().getUnionId(), dto.getCalendarId(), createEventRequest, headers, runtimeOptions);
+        calendarClient.createEventWithOptions(
+                dto.getOrganizer().getUnionId(),
+                dto.getCalendarId(),
+                createEventRequest,
+                headers,
+                runtimeOptions);
+    }
+
+    public void updateCalendarEvent(ScheduleEventDTO dto) throws Exception
+    {
+        PatchEventHeaders headers = new PatchEventHeaders().setXAcsDingtalkAccessToken(getAccessToken());
+        PatchEventRequest.PatchEventRequestOnlineMeetingInfo onlineMeetingInfo = new PatchEventRequest.PatchEventRequestOnlineMeetingInfo()
+                .setType("dingtalk");
+        PatchEventRequest.PatchEventRequestLocation location = new PatchEventRequest.PatchEventRequestLocation()
+                .setDisplayName(dto.getLocation());
+        List<PatchEventRequest.PatchEventRequestAttendees> attendees = new java.util.ArrayList<>();
+        if (dto.getAttendees() != null) {
+            for (EventAttendeeDTO attendee : dto.getAttendees()) {
+                PatchEventRequest.PatchEventRequestAttendees attendee0 = new PatchEventRequest.PatchEventRequestAttendees()
+                        .setId(attendee.getEmployeeUnionId());
+                attendees.add(attendee0);
+            }
+        }
+        PatchEventRequest.PatchEventRequestStart start = new PatchEventRequest.PatchEventRequestStart()
+                .setDateTime(dto.getEndTime().toString())
+                .setTimeZone("Asia/Shanghai");
+        PatchEventRequest.PatchEventRequestEnd end = new PatchEventRequest.PatchEventRequestEnd()
+                .setDateTime(dto.getEndTime().toString())
+                .setTimeZone("Asia/Shanghai");
+        PatchEventRequest request = new PatchEventRequest()
+                .setSummary(dto.getSummary())
+                .setDescription(dto.getDescription())
+                .setStart(start)
+                .setEnd(end)
+                .setIsAllDay(false)
+                .setAttendees(attendees)
+                .setLocation(location)
+                .setOnlineMeetingInfo(onlineMeetingInfo);
+
+        RuntimeOptions runtimeOptions = new RuntimeOptions();
+        calendarClient.patchEventWithOptions(
+                dto.getOrganizer().getUnionId(),
+                dto.getCalendarId(),
+                dto.getDingtalkEventId(),
+                request,
+                headers,
+                runtimeOptions);
+    }
+
+    public void deleteCalendarEvent(String organizerUnionId, String calendarId, String eventId) throws Exception
+    {
+        DeleteEventHeaders headers = new DeleteEventHeaders().setXAcsDingtalkAccessToken(getAccessToken());
+        DeleteEventRequest request = new DeleteEventRequest();
+        RuntimeOptions runtimeOptions = new RuntimeOptions();
+        calendarClient.deleteEventWithOptions(organizerUnionId, calendarId, eventId, request, headers, runtimeOptions);
+    }
+
+    public void getCalendarEvents(
+            String organizerUnionId, String calendarId, String startTime, String endTime, String nextToken
+                                 ) throws Exception
+    {
+        ListEventsViewHeaders headers = new ListEventsViewHeaders().setXAcsDingtalkAccessToken(getAccessToken());
+        ListEventsViewRequest request = new ListEventsViewRequest()
+                .setNextToken(nextToken)
+                .setTimeMin(startTime)
+                .setTimeMax(endTime);
+
+        RuntimeOptions runtimeOptions = new RuntimeOptions();
+        ListEventsViewResponse response = calendarClient.listEventsViewWithOptions(
+                organizerUnionId,
+                calendarId,
+                request,
+                headers,
+                runtimeOptions);
     }
 }

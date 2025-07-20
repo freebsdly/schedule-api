@@ -8,7 +8,9 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ScheduleEventRepository extends JpaRepository<ScheduleEventEntity, Long>, QuerydslPredicateExecutor<ScheduleEventEntity> {
+public interface ScheduleEventRepository
+        extends JpaRepository<ScheduleEventEntity, Long>, QuerydslPredicateExecutor<ScheduleEventEntity>
+{
 
     void deleteByDingtalkEventId(String id);
 

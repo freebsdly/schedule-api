@@ -5,7 +5,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "Task API")
-public interface TaskDoc {
+public interface TaskDoc
+{
 
     @Operation(summary = "Sync departments", description = "从天讯全量同步部门信息")
     APIResultVO<Void> syncDepartments() throws Exception;

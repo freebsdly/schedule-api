@@ -15,7 +15,8 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "schedule_events")
-public class ScheduleEventEntity {
+public class ScheduleEventEntity
+{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

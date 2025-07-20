@@ -10,7 +10,8 @@ import java.util.List;
  * DTO for {@link MeetingMinutesEntity}
  */
 @Data
-public class MeetingMinutesDTO implements Serializable {
+public class MeetingMinutesDTO implements Serializable
+{
     Long id;
     String rawData;
     String answer;

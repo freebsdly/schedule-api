@@ -8,9 +8,11 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableFeignClients
 @EnableAsync
 @SpringBootApplication
-public class ScheduleApiApplication {
+public class ScheduleApiApplication
+{
 
-    public static void main(String[] args) {
+    public static void main(String[] args)
+    {
         SpringApplication.run(ScheduleApiApplication.class, args);
     }
 

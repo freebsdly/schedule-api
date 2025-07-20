@@ -9,10 +9,12 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @EnableJpaRepositories
 @Configuration
-public class Config {
+public class Config
+{
 
     @Bean
-    public com.aliyun.dingtalkcalendar_1_0.Client calendarClient() throws Exception {
+    public com.aliyun.dingtalkcalendar_1_0.Client calendarClient() throws Exception
+    {
         com.aliyun.teaopenapi.models.Config config = new com.aliyun.teaopenapi.models.Config();
         config.setProtocol("https");
         config.setRegionId("central");
@@ -20,7 +22,8 @@ public class Config {
     }
 
     @Bean
-    public com.aliyun.dingtalkconference_1_0.Client conferenceClient() throws Exception {
+    public com.aliyun.dingtalkconference_1_0.Client conferenceClient() throws Exception
+    {
         com.aliyun.teaopenapi.models.Config config = new com.aliyun.teaopenapi.models.Config();
         config.setProtocol("https");
         config.setRegionId("central");
@@ -28,7 +31,8 @@ public class Config {
     }
 
     @Bean
-    public com.aliyun.dingtalkoauth2_1_0.Client oauth2Client() throws Exception {
+    public com.aliyun.dingtalkoauth2_1_0.Client oauth2Client() throws Exception
+    {
         com.aliyun.teaopenapi.models.Config config = new com.aliyun.teaopenapi.models.Config();
         config.setProtocol("https");
         config.setRegionId("central");
@@ -36,7 +40,8 @@ public class Config {
     }
 
     @Bean
-    public static com.aliyun.dingtalkdoc_1_0.Client docClient() throws Exception {
+    public static com.aliyun.dingtalkdoc_1_0.Client docClient() throws Exception
+    {
         com.aliyun.teaopenapi.models.Config config = new com.aliyun.teaopenapi.models.Config();
         config.setProtocol("https");
         config.setRegionId("central");
@@ -44,7 +49,8 @@ public class Config {
     }
 
     @Bean
-    public static com.aliyun.dingtalkim_1_0.Client imClient() throws Exception {
+    public static com.aliyun.dingtalkim_1_0.Client imClient() throws Exception
+    {
         com.aliyun.teaopenapi.models.Config config = new com.aliyun.teaopenapi.models.Config();
         config.setProtocol("https");
         config.setRegionId("central");
@@ -52,7 +58,8 @@ public class Config {
     }
 
     @Bean
-    public static com.aliyun.dingtalkcard_1_0.Client cardClient() throws Exception {
+    public static com.aliyun.dingtalkcard_1_0.Client cardClient() throws Exception
+    {
         com.aliyun.teaopenapi.models.Config config = new com.aliyun.teaopenapi.models.Config();
         config.setProtocol("https");
         config.setRegionId("central");
@@ -60,7 +67,8 @@ public class Config {
     }
 
     @Bean
-    public com.aliyun.dingtalkrobot_1_0.Client robotClient() throws Exception {
+    public com.aliyun.dingtalkrobot_1_0.Client robotClient() throws Exception
+    {
         com.aliyun.teaopenapi.models.Config config = new com.aliyun.teaopenapi.models.Config();
         config.protocol = "https";
         config.regionId = "central";
@@ -68,7 +76,8 @@ public class Config {
     }
 
     @Bean
-    public ToolCallbackProvider mcpTools(ToolService service) {
+    public ToolCallbackProvider mcpTools(ToolService service)
+    {
         return MethodToolCallbackProvider.builder().toolObjects(service).build();
     }
 

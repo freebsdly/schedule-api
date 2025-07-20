@@ -12,7 +12,8 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class EmployeeResponseDTO {
+public class EmployeeResponseDTO
+{
 
     @JsonProperty("request_id")
     String requestId;
@@ -29,7 +30,8 @@ public class EmployeeResponseDTO {
     @JsonIgnoreProperties(ignoreUnknown = true)
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class EmployeeResultDTO {
+    public static class EmployeeResultDTO
+    {
 
         @JsonProperty("has_more")
         boolean HasMore;
@@ -45,7 +47,8 @@ public class EmployeeResponseDTO {
     @JsonIgnoreProperties(ignoreUnknown = true)
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class EmployeeInfoDTO {
+    public static class EmployeeInfoDTO
+    {
 
         @JsonProperty("userid")
         String userId;

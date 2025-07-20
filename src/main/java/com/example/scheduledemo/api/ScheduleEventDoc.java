@@ -8,7 +8,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 
 @Tag(name = "Schedule Event API")
-public interface ScheduleEventDoc {
+public interface ScheduleEventDoc
+{
 
     @Operation(summary = "Push Event Data to Table", description = "推送数据到多维表")
     APIResultVO<String> pushEventDataToTable(String nodeId, String content) throws Exception;

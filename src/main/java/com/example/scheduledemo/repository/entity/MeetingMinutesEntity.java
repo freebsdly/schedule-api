@@ -15,7 +15,8 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "meeting_minutes")
-public class MeetingMinutesEntity {
+public class MeetingMinutesEntity
+{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

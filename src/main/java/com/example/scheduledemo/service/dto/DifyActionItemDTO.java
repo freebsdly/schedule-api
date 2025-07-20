@@ -9,7 +9,8 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DifyActionItemDTO {
+public class DifyActionItemDTO
+{
     private String item;
     private String executor;
     private LocalDate dueDate;

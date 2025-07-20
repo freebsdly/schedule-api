@@ -7,12 +7,14 @@ import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface DTOMapper {
+public interface DTOMapper
+{
 
     DTOMapper INSTANCE = Mappers.getMapper(DTOMapper.class);
 
 
-    default DepartmentEntity toEntity(OapiV2DepartmentListsubResponse.DeptBaseResponse dto) {
+    default DepartmentEntity toEntity(OapiV2DepartmentListsubResponse.DeptBaseResponse dto)
+    {
         DepartmentEntity departmentEntity = new DepartmentEntity();
 
         departmentEntity.setName(dto.getName());
@@ -22,7 +24,8 @@ public interface DTOMapper {
         return departmentEntity;
     }
 
-    default EmployeeEntity toEntity(EmployeeResponseDTO.EmployeeInfoDTO  dto) {
+    default EmployeeEntity toEntity(EmployeeResponseDTO.EmployeeInfoDTO dto)
+    {
         EmployeeEntity employeeEntity = new EmployeeEntity();
         employeeEntity.setName(dto.getName());
         employeeEntity.setEmail(dto.getEmail());
@@ -60,7 +63,8 @@ public interface DTOMapper {
     ScheduleEventDTO toDto(ScheduleEventEntity scheduleEventEntity);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    ScheduleEventEntity partialUpdate(ScheduleEventDTO scheduleEventDTO, @MappingTarget ScheduleEventEntity scheduleEventEntity);
+    ScheduleEventEntity partialUpdate(ScheduleEventDTO scheduleEventDTO,
+                                      @MappingTarget ScheduleEventEntity scheduleEventEntity);
 
     /**
      * Meeting Minutes Mapper
@@ -70,10 +74,12 @@ public interface DTOMapper {
     MeetingMinutesDTO toDto(MeetingMinutesEntity meetingMinutesEntity);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    MeetingMinutesEntity partialUpdate(MeetingMinutesDTO meetingMinutesDto, @MappingTarget MeetingMinutesEntity meetingMinutesEntity);
+    MeetingMinutesEntity partialUpdate(MeetingMinutesDTO meetingMinutesDto,
+                                       @MappingTarget MeetingMinutesEntity meetingMinutesEntity);
 
     @AfterMapping
-    default void linkActionItems(@MappingTarget MeetingMinutesEntity meetingMinutesEntity) {
+    default void linkActionItems(@MappingTarget MeetingMinutesEntity meetingMinutesEntity)
+    {
         meetingMinutesEntity.getActionItems().forEach(actionItem -> actionItem.setMeetingMinute(meetingMinutesEntity));
     }
 

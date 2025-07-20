@@ -25,7 +25,8 @@ import java.util.Map;
 
 @Slf4j
 @Service
-public class ScheduleEventService {
+public class ScheduleEventService
+{
     @Autowired
     private ScheduleEventRepository scheduleEventRepository;
 
@@ -67,23 +68,27 @@ public class ScheduleEventService {
     @Autowired
     private SpringTemplateEngine templateEngine;
 
-    private String getDate(String utcDateTime) {
+    private String getDate(String utcDateTime)
+    {
         Instant parse = Instant.parse(utcDateTime);
         LocalDateTime localDateTime = LocalDateTime.ofInstant(parse, ZoneId.of("Asia/Shanghai"));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return localDateTime.format(formatter);
     }
 
-    private String processMarkdown(String templateName, Map<String, Object> content) throws JsonProcessingException {
+    private String processMarkdown(String templateName, Map<String, Object> content) throws JsonProcessingException
+    {
         Context context = new Context();
         context.setVariables(content);
         return templateEngine.process(templateName, context);
     }
 
-    private Map<String, Object> answerMapper(String answer, GetEventResponseBody event) throws Exception {
+    private Map<String, Object> answerMapper(String answer, GetEventResponseBody event) throws Exception
+    {
         Map<String, Object> variables = new HashMap<>();
         try {
-            variables = objectMapper.readValue(answer, new TypeReference<Map<String, Object>>() {
+            variables = objectMapper.readValue(answer, new TypeReference<Map<String, Object>>()
+            {
             });
             variables.put("hasError", false);
         } catch (Exception ex) {
@@ -100,7 +105,8 @@ public class ScheduleEventService {
         return variables;
     }
 
-    public String generateEventMeetingMinutes(String eventId) throws Exception {
+    public String generateEventMeetingMinutes(String eventId) throws Exception
+    {
         RecordTextResultDTO info = dingTalkService.getEventCloudRecordAllText(userUnionId, userCalendarId, eventId);
         Map<String, Object> variables;
         String startDate = getDate(info.getStartTime());
@@ -157,21 +163,25 @@ public class ScheduleEventService {
     }
 
 
-    public void generateActionItems(String eventId) throws Exception {
+    public void generateActionItems(String eventId) throws Exception
+    {
     }
 
-    public List<ScheduleEventDTO> getScheduleEvents() {
+    public List<ScheduleEventDTO> getScheduleEvents()
+    {
         return scheduleEventRepository.findAll().stream().map(DTOMapper.INSTANCE::toDto).toList();
     }
 
-    public ScheduleEventDTO createScheduleEvent(ScheduleEventDTO dto) throws Exception {
+    public ScheduleEventDTO createScheduleEvent(ScheduleEventDTO dto) throws Exception
+    {
         ScheduleEventEntity entity = DTOMapper.INSTANCE.toEntity(dto);
         entity.setId(null);
         ScheduleEventEntity save = scheduleEventRepository.save(entity);
         return DTOMapper.INSTANCE.toDto(save);
     }
 
-    public ScheduleEventDTO updateScheduleEvent(ScheduleEventDTO scheduleEventDTO) throws Exception {
+    public ScheduleEventDTO updateScheduleEvent(ScheduleEventDTO scheduleEventDTO) throws Exception
+    {
         ScheduleEventEntity exist = scheduleEventRepository.findById(scheduleEventDTO.getId())
                 .orElseThrow(() -> new BusinessException("event not found"));
 
@@ -180,7 +190,8 @@ public class ScheduleEventService {
         return DTOMapper.INSTANCE.toDto(save);
     }
 
-    public ScheduleEventDTO updateScheduleEventByDingTalkId(ScheduleEventDTO dto) throws Exception {
+    public ScheduleEventDTO updateScheduleEventByDingTalkId(ScheduleEventDTO dto) throws Exception
+    {
         ScheduleEventEntity exist = scheduleEventRepository.findByDingtalkEventId(dto.getDingtalkEventId())
                 .orElseThrow(() -> new BusinessException("event not found"));
         ScheduleEventEntity update = DTOMapper.INSTANCE.partialUpdate(dto, exist);
@@ -188,11 +199,13 @@ public class ScheduleEventService {
         return DTOMapper.INSTANCE.toDto(save);
     }
 
-    public void deleteScheduleEvent(Long id) throws Exception {
+    public void deleteScheduleEvent(Long id) throws Exception
+    {
         scheduleEventRepository.deleteById(id);
     }
 
-    public void deleteScheduleEventByDingTalkId(String id) throws Exception {
+    public void deleteScheduleEventByDingTalkId(String id) throws Exception
+    {
         scheduleEventRepository.deleteByDingtalkEventId(id);
     }
 }

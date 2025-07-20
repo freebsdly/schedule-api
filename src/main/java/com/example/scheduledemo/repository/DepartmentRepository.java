@@ -8,7 +8,9 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface DepartmentRepository extends JpaRepository<DepartmentEntity, Long>, QuerydslPredicateExecutor<DepartmentEntity> {
+public interface DepartmentRepository
+        extends JpaRepository<DepartmentEntity, Long>, QuerydslPredicateExecutor<DepartmentEntity>
+{
 
     Optional<DepartmentEntity> findByDingTalkDepartmentId(Long dingTalkDepartmentId);
 }

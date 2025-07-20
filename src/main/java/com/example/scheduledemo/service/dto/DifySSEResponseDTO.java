@@ -11,7 +11,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DifySSEResponseDTO {
+public class DifySSEResponseDTO
+{
 
     private String event;
     private UUID conversationID;
@@ -25,7 +26,8 @@ public class DifySSEResponseDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class SSEResponseData {
+    public static class SSEResponseData
+    {
 
         private UUID id;
         private UUID workflowID;
@@ -44,7 +46,8 @@ public class DifySSEResponseDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class SSEResponseOutputs {
+    public static class SSEResponseOutputs
+    {
         private String answer;
     }
 }

@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateDocResultDTO {
+public class CreateDocResultDTO
+{
     private String docUrl;
     private String error;
 }
