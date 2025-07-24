@@ -8,7 +8,8 @@ import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface VOMapper {
+public interface VOMapper
+{
 
     VOMapper INSTANCE = Mappers.getMapper(VOMapper.class);
 
@@ -19,7 +20,10 @@ public interface VOMapper {
     MeetingMinutesVO toVO(MeetingMinutesDTO meetingMinutesDto);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "dingtalkEventId", source = "id")
-    ScheduleEventDTO toDTO(OperateEventVO vo);
+    @Mapping(target = "dingtalkEventId", ignore = true)
+    ScheduleEventDTO toDTO(EventVO.Create vo);
 
+    ScheduleEventDTO toDTO(EventVO.Update vo);
+
+    ScheduleEventDTO toDTO(EventVO.Operate vo);
 }

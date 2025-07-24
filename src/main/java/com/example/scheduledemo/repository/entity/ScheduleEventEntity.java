@@ -52,4 +52,8 @@ public class ScheduleEventEntity
     private String priority;
 
     private String status;
+
+    @ManyToOne
+    @JoinColumn(name = "owner_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private EmployeeEntity owner;
 }

@@ -1,9 +1,11 @@
 package com.example.scheduledemo.api;
 
 import com.example.scheduledemo.api.vo.APIResultVO;
+import com.example.scheduledemo.api.vo.EventVO;
 import com.example.scheduledemo.service.dto.ScheduleEventDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springdoc.core.annotations.ParameterObject;
 
 import java.util.List;
 
@@ -17,8 +19,16 @@ public interface ScheduleEventDoc
     @Operation(summary = "Generate Event Meeting Minutes", description = "输入event id, 从预定的用户和日历上查询日程录制音频转文字，并通过AI服务总结会议纪要，创建天讯文档，并更新多维表")
     APIResultVO<String> generateEventMeetingMinutes(String eventId) throws Exception;
 
+    @Operation(summary = "Create Schedule Event")
+    APIResultVO<ScheduleEventDTO> createScheduleEvent(EventVO.Create vo) throws Exception;
 
-    @Operation(summary = "Query Schedule Event")
-    APIResultVO<List<ScheduleEventDTO>> getScheduleEvent();
+    @Operation(summary = "Update Schedule Event")
+    APIResultVO<Void> updateScheduleEvent(EventVO.Update vo) throws Exception;
+
+    @Operation(summary = "Delete Schedule Event")
+    APIResultVO<String> deleteScheduleEvent(@ParameterObject EventVO.Delete vo) throws Exception;
+
+    @Operation(summary = "Query Schedule Events")
+    APIResultVO<List<ScheduleEventDTO>> queryScheduleEvents(EventVO.Query vo);
 
 }

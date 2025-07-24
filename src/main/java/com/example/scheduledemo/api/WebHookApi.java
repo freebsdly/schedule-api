@@ -1,7 +1,7 @@
 package com.example.scheduledemo.api;
 
 import com.example.scheduledemo.api.vo.APIResultVO;
-import com.example.scheduledemo.api.vo.OperateEventVO;
+import com.example.scheduledemo.api.vo.EventVO;
 import com.example.scheduledemo.api.vo.VOMapper;
 import com.example.scheduledemo.service.ScheduleEventService;
 import com.example.scheduledemo.service.dto.ScheduleEventDTO;
@@ -22,7 +22,7 @@ public class WebHookApi implements WebHookDoc
     private ScheduleEventService scheduleEventService;
 
     @PostMapping(value = "")
-    public APIResultVO<Object> operateScheduleEvent(@RequestBody OperateEventVO vo) throws Exception
+    public APIResultVO<Object> operateScheduleEvent(@RequestBody EventVO.Operate vo) throws Exception
     {
         log.debug("operate event: {}", vo);
         ScheduleEventDTO dto = VOMapper.INSTANCE.toDTO(vo);

@@ -1,7 +1,9 @@
 package com.example.scheduledemo.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -11,6 +13,8 @@ import java.util.List;
  * DTO for {@link com.example.scheduledemo.repository.entity.ScheduleEventEntity}
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ScheduleEventDTO implements Serializable
 {
 
@@ -30,5 +34,6 @@ public class ScheduleEventDTO implements Serializable
     String priority;
     String status;
     String calendarId;
+    EmployeeDTO owner;
 
 }

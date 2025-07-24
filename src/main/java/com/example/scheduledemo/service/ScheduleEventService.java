@@ -201,11 +201,13 @@ public class ScheduleEventService
 
     public void deleteScheduleEvent(Long id) throws Exception
     {
+        scheduleEventRepository.findById(id).orElseThrow(() -> new BusinessException("event not found"));
         scheduleEventRepository.deleteById(id);
     }
 
     public void deleteScheduleEventByDingTalkId(String id) throws Exception
     {
+        scheduleEventRepository.findByDingtalkEventId(id).orElseThrow(() -> new BusinessException("event not found"));
         scheduleEventRepository.deleteByDingtalkEventId(id);
     }
 }

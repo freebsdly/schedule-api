@@ -31,6 +31,10 @@ public class APIResultVO<T> implements Serializable {
         return new APIResultVO<>(0L, "success", data);
     }
 
+    public static <T> APIResultVO<T> failure(String message) {
+        return new APIResultVO<>(500L, message, null);
+    }
+
     public static <T> APIResultVO<T> failure(Long code, String message) {
         return new APIResultVO<>(code, message, null);
     }

@@ -1,6 +1,8 @@
 package com.example.scheduledemo.api;
 
 import com.example.scheduledemo.api.vo.APIResultVO;
+import com.example.scheduledemo.api.vo.EventVO;
+import com.example.scheduledemo.api.vo.VOMapper;
 import com.example.scheduledemo.service.DingTalkService;
 import com.example.scheduledemo.service.ScheduleEventService;
 import com.example.scheduledemo.service.dto.ScheduleEventDTO;
@@ -40,9 +42,42 @@ public class ScheduleEventApi implements ScheduleEventDoc
     }
 
     @Override
-    public APIResultVO<List<ScheduleEventDTO>> getScheduleEvent()
+    @PostMapping
+    public APIResultVO<ScheduleEventDTO> createScheduleEvent(@RequestBody EventVO.Create vo) throws Exception
     {
-        List<ScheduleEventDTO> scheduleEvents = scheduleEventService.getScheduleEvents();
-        return APIResultVO.success(scheduleEvents);
+        ScheduleEventDTO dto = VOMapper.INSTANCE.toDTO(vo);
+        ScheduleEventDTO scheduleEventDTO = scheduleEventService.createScheduleEvent(dto);
+        return APIResultVO.success(scheduleEventDTO);
+    }
+
+    @Override
+    @PutMapping
+    public APIResultVO<Void> updateScheduleEvent(EventVO.Update vo) throws Exception
+    {
+        ScheduleEventDTO dto = VOMapper.INSTANCE.toDTO(vo);
+        scheduleEventService.updateScheduleEvent(dto);
+        return APIResultVO.success();
+    }
+
+    @Override
+    @DeleteMapping
+    public APIResultVO<String> deleteScheduleEvent(@ModelAttribute EventVO.Delete vo) throws Exception
+    {
+        if (vo.getId() != null && vo.getId() > 0) {
+            scheduleEventService.deleteScheduleEvent(vo.getId());
+        } else if (vo.getDingTalkEventId() != null && !vo.getDingTalkEventId().isEmpty()) {
+            scheduleEventService.deleteScheduleEventByDingTalkId(vo.getDingTalkEventId());
+        } else {
+            return APIResultVO.failure("参数错误");
+        }
+        return APIResultVO.success("删除成功");
+    }
+
+    @Override
+    @GetMapping
+    public APIResultVO<List<ScheduleEventDTO>> queryScheduleEvents(EventVO.Query vo)
+    {
+
+        return null;
     }
 }

@@ -7,6 +7,6 @@ import lombok.Data;
 @Schema(description = "ID参数")
 public class IdVO {
 
-    @Schema(description = "ID")
+    @Schema(description = "ID", example = "1")
     private String id;
 }
