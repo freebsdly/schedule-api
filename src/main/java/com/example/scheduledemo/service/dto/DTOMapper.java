@@ -54,14 +54,19 @@ public interface DTOMapper {
     /**
      * Schedule Event Mapper
      */
+    @Mapping(target="attendees", ignore = true)
+    ScheduleEventEntity toCreateEntity(EventDTO.Create dto);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "employee.id", source = "employeeId")
+    EventAttendeeEntity toCreateEntity(EventAttendeeDTO dto);
 
     ScheduleEventEntity toEntity(ScheduleEventDTO dto);
 
-    ScheduleEventDTO toDto(ScheduleEventEntity scheduleEventEntity);
+    EventDTO.Detail toDTO(ScheduleEventEntity entity);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    ScheduleEventEntity partialUpdate(ScheduleEventDTO scheduleEventDTO,
-                                      @MappingTarget ScheduleEventEntity scheduleEventEntity);
+    ScheduleEventEntity partialUpdate(EventDTO.Update dto, @MappingTarget ScheduleEventEntity entity);
 
     /**
      * Meeting Minutes Mapper

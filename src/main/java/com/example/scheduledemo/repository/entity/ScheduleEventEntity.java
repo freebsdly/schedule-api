@@ -42,7 +42,7 @@ public class ScheduleEventEntity
     @JoinColumn(name = "organizer_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private EmployeeEntity organizer;
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "event", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<EventAttendeeEntity> attendees;
 
     private Boolean isAllDay;

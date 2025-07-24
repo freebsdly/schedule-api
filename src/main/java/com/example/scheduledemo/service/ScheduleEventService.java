@@ -2,16 +2,22 @@ package com.example.scheduledemo.service;
 
 import com.aliyun.dingtalkcalendar_1_0.models.GetEventResponseBody;
 import com.example.scheduledemo.exception.BusinessException;
+import com.example.scheduledemo.repository.EmployeeRepository;
+import com.example.scheduledemo.repository.EventAttendeeRepository;
 import com.example.scheduledemo.repository.ScheduleEventRepository;
+import com.example.scheduledemo.repository.entity.EmployeeEntity;
+import com.example.scheduledemo.repository.entity.EventAttendeeEntity;
 import com.example.scheduledemo.repository.entity.ScheduleEventEntity;
 import com.example.scheduledemo.service.dto.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
@@ -25,19 +31,22 @@ import java.util.Map;
 
 @Slf4j
 @Service
-public class ScheduleEventService
-{
-    @Autowired
-    private ScheduleEventRepository scheduleEventRepository;
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
+public class ScheduleEventService {
 
-    @Autowired
-    private DingTalkService dingTalkService;
+    private final ScheduleEventRepository scheduleEventRepository;
 
-    @Autowired
-    private AIService aiService;
+    private final EventAttendeeRepository eventAttendeeRepository;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final EmployeeRepository employeeRepository;
+
+    private final DingTalkService dingTalkService;
+
+    private final AIService aiService;
+
+    private final ObjectMapper objectMapper;
+
+    private final SpringTemplateEngine templateEngine;
 
 
     // TODO: 放到IOC容器中
@@ -49,9 +58,6 @@ public class ScheduleEventService
 
     @Value("${schedule-event.user.event-table-id}")
     private String userEventTableId;
-
-    @Value("${schedule-event.user.action-item-table-id}")
-    private String userActionItemTableId;
 
     @Value("${schedule-event.user.kb.workspace-id}")
     private String userKbWorkspaceId;
@@ -65,30 +71,23 @@ public class ScheduleEventService
     @Value("${schedule-event.user.meeting-minutes.template-name}")
     private String userMeetingMinutesTemplateName;
 
-    @Autowired
-    private SpringTemplateEngine templateEngine;
-
-    private String getDate(String utcDateTime)
-    {
+    private String getDate(String utcDateTime) {
         Instant parse = Instant.parse(utcDateTime);
         LocalDateTime localDateTime = LocalDateTime.ofInstant(parse, ZoneId.of("Asia/Shanghai"));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return localDateTime.format(formatter);
     }
 
-    private String processMarkdown(String templateName, Map<String, Object> content) throws JsonProcessingException
-    {
+    private String processMarkdown(String templateName, Map<String, Object> content) throws JsonProcessingException {
         Context context = new Context();
         context.setVariables(content);
         return templateEngine.process(templateName, context);
     }
 
-    private Map<String, Object> answerMapper(String answer, GetEventResponseBody event) throws Exception
-    {
+    private Map<String, Object> answerMapper(String answer, GetEventResponseBody event) throws Exception {
         Map<String, Object> variables = new HashMap<>();
         try {
-            variables = objectMapper.readValue(answer, new TypeReference<Map<String, Object>>()
-            {
+            variables = objectMapper.readValue(answer, new TypeReference<Map<String, Object>>() {
             });
             variables.put("hasError", false);
         } catch (Exception ex) {
@@ -105,8 +104,7 @@ public class ScheduleEventService
         return variables;
     }
 
-    public String generateEventMeetingMinutes(String eventId) throws Exception
-    {
+    public String generateEventMeetingMinutes(String eventId) throws Exception {
         RecordTextResultDTO info = dingTalkService.getEventCloudRecordAllText(userUnionId, userCalendarId, eventId);
         Map<String, Object> variables;
         String startDate = getDate(info.getStartTime());
@@ -163,51 +161,61 @@ public class ScheduleEventService
     }
 
 
-    public void generateActionItems(String eventId) throws Exception
-    {
+    public List<EventDTO.Detail> getScheduleEvents(EventDTO.Query query) {
+        return scheduleEventRepository.findAll().stream().map(DTOMapper.INSTANCE::toDTO).toList();
     }
 
-    public List<ScheduleEventDTO> getScheduleEvents()
-    {
-        return scheduleEventRepository.findAll().stream().map(DTOMapper.INSTANCE::toDto).toList();
-    }
-
-    public ScheduleEventDTO createScheduleEvent(ScheduleEventDTO dto) throws Exception
-    {
-        ScheduleEventEntity entity = DTOMapper.INSTANCE.toEntity(dto);
-        entity.setId(null);
+    @Transactional
+    public EventDTO.Detail createScheduleEvent(EventDTO.Create dto) throws Exception {
+        EmployeeEntity organizer = employeeRepository.findById(dto.getOrganizer().getId()).orElseThrow(() -> new Exception("组织人不存在"));
+        EmployeeEntity owner = employeeRepository.findById(dto.getOwner().getId()).orElseThrow(() -> new Exception("拥有者不存在"));
+        if (!dto.getAttendees().isEmpty()) {
+            for (EventAttendeeDTO attendee : dto.getAttendees()) {
+                employeeRepository.findById(attendee.getId()).orElseThrow(() -> new Exception("参会人不存在"));
+            }
+        }
+        ScheduleEventEntity entity = DTOMapper.INSTANCE.toCreateEntity(dto);
+        entity.setOwner(owner);
+        entity.setOrganizer(organizer);
         ScheduleEventEntity save = scheduleEventRepository.save(entity);
-        return DTOMapper.INSTANCE.toDto(save);
+        if (!dto.getAttendees().isEmpty()) {
+            List<EventAttendeeEntity> list = dto.getAttendees().stream().map(e -> {
+                EventAttendeeEntity ea = DTOMapper.INSTANCE.toCreateEntity(e);
+                ea.setEvent(save);
+                return ea;
+            }).toList();
+            List<EventAttendeeEntity> eventAttendeeEntities = eventAttendeeRepository.saveAll(list);
+            save.setAttendees(eventAttendeeEntities);
+        }
+        return DTOMapper.INSTANCE.toDTO(save);
     }
 
-    public ScheduleEventDTO updateScheduleEvent(ScheduleEventDTO scheduleEventDTO) throws Exception
-    {
-        ScheduleEventEntity exist = scheduleEventRepository.findById(scheduleEventDTO.getId())
-                .orElseThrow(() -> new BusinessException("event not found"));
+    @Transactional
+    public EventDTO.Detail updateScheduleEvent(EventDTO.Update dto) throws Exception {
+        ScheduleEventEntity exist;
+        if (dto.getId() != null) {
+            exist = scheduleEventRepository.findById(dto.getId())
+                    .orElseThrow(() -> new BusinessException("event not found"));
+        } else {
+            exist = scheduleEventRepository.findByDingtalkEventId(dto.getDingtalkEventId())
+                    .orElseThrow(() -> new BusinessException("event not found"));
+        }
 
-        ScheduleEventEntity update = DTOMapper.INSTANCE.partialUpdate(scheduleEventDTO, exist);
-        ScheduleEventEntity save = scheduleEventRepository.save(update);
-        return DTOMapper.INSTANCE.toDto(save);
-    }
-
-    public ScheduleEventDTO updateScheduleEventByDingTalkId(ScheduleEventDTO dto) throws Exception
-    {
-        ScheduleEventEntity exist = scheduleEventRepository.findByDingtalkEventId(dto.getDingtalkEventId())
-                .orElseThrow(() -> new BusinessException("event not found"));
         ScheduleEventEntity update = DTOMapper.INSTANCE.partialUpdate(dto, exist);
         ScheduleEventEntity save = scheduleEventRepository.save(update);
-        return DTOMapper.INSTANCE.toDto(save);
+        return DTOMapper.INSTANCE.toDTO(save);
     }
 
-    public void deleteScheduleEvent(Long id) throws Exception
-    {
-        scheduleEventRepository.findById(id).orElseThrow(() -> new BusinessException("event not found"));
-        scheduleEventRepository.deleteById(id);
-    }
-
-    public void deleteScheduleEventByDingTalkId(String id) throws Exception
-    {
-        scheduleEventRepository.findByDingtalkEventId(id).orElseThrow(() -> new BusinessException("event not found"));
-        scheduleEventRepository.deleteByDingtalkEventId(id);
+    @Transactional
+    public void deleteScheduleEvent(EventDTO.Delete dto) throws Exception {
+        ScheduleEventEntity exist;
+        if (dto.getId() != null) {
+            exist = scheduleEventRepository.findById(dto.getId())
+                    .orElseThrow(() -> new BusinessException("event not found"));
+        } else {
+            exist = scheduleEventRepository.findByDingtalkEventId(dto.getDingtalkEventId())
+                    .orElseThrow(() -> new BusinessException("event not found"));
+        }
+        scheduleEventRepository.delete(exist);
     }
 }

@@ -8,5 +8,5 @@ import lombok.Data;
 public class IdVO {
 
     @Schema(description = "ID", example = "1")
-    private String id;
+    private Long id;
 }

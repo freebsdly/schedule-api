@@ -50,11 +50,10 @@ public class EventVO
         private String dingTalkEventId;
     }
 
-    @EqualsAndHashCode(callSuper = true)
     @Data
     @NoArgsConstructor
     @Schema(description = "查询日程参数")
-    public static class Query extends Common
+    public static class Query
     {
 
         @Schema(description = "日程ID", example = "1")
@@ -113,7 +112,7 @@ public class EventVO
         @Schema(description = "日程组织人", requiredMode = Schema.RequiredMode.REQUIRED)
         private IdVO organizer;
 
-        @Schema(description = "参会人列表", example = "", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+        @Schema(description = "参会人列表", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
         private List<IdVO> attendees;
 
         @Schema(description = "日程拥有者人", requiredMode = Schema.RequiredMode.REQUIRED)

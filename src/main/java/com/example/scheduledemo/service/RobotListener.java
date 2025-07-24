@@ -5,16 +5,17 @@ import com.dingtalk.open.app.api.OpenDingTalkStreamClientBuilder;
 import com.dingtalk.open.app.api.callback.DingTalkStreamTopics;
 import com.dingtalk.open.app.api.security.AuthClientCredential;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class RobotListener
 {
 
-    @Autowired
-    private RobotConsumer robotConsumer;
+    private final RobotConsumer robotConsumer;
 
     @Value("${dingtalk.ak}")
     private String appKey;

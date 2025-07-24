@@ -1,5 +1,7 @@
 package com.example.scheduledemo.api.vo;
 
+import com.example.scheduledemo.service.dto.EventAttendeeDTO;
+import com.example.scheduledemo.service.dto.EventDTO;
 import com.example.scheduledemo.service.dto.MeetingMinutesDTO;
 import com.example.scheduledemo.service.dto.ScheduleEventDTO;
 import org.mapstruct.Mapper;
@@ -19,11 +21,20 @@ public interface VOMapper
 
     MeetingMinutesVO toVO(MeetingMinutesDTO meetingMinutesDto);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "dingtalkEventId", ignore = true)
-    ScheduleEventDTO toDTO(EventVO.Create vo);
+    @Mapping(source = "id", target = "employeeId")
+    EventAttendeeDTO toDTO(IdVO vo);
 
-    ScheduleEventDTO toDTO(EventVO.Update vo);
+    EventDTO.Create toDTO(EventVO.Create vo);
 
-    ScheduleEventDTO toDTO(EventVO.Operate vo);
+    EventDTO.Update toDTO(EventVO.Update vo);
+
+    EventDTO.Delete toDTO(EventVO.Delete vo);
+
+    EventDTO.Query toDTO(EventVO.Query vo);
+
+    EventDTO.Create toCreateDTO(EventVO.Operate vo);
+
+    EventDTO.Update toUpdateDTO(EventVO.Operate vo);
+
+    EventDTO.Delete toDeleteDTO(EventVO.Operate vo);
 }

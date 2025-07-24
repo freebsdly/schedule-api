@@ -15,6 +15,7 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -31,16 +32,14 @@ import java.util.function.Function;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class RobotConsumer implements OpenDingTalkCallbackListener<ChatbotMessage, Void> {
 
-    @Autowired
-    private DingTalkService dingTalkService;
+    private final DingTalkService dingTalkService;
 
-    @Autowired
-    private AIService aiService;
+    private final AIService aiService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
 
     private final String messageCardTemplate = """
